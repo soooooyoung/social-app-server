@@ -1,4 +1,5 @@
 import * as bcrypt from "bcrypt";
+import { IllegalStateException } from "models/exceptions";
 
 export const encode = async (password: string) => {
   try {
@@ -6,7 +7,7 @@ export const encode = async (password: string) => {
     const res = await bcrypt.hash(password, salt);
     return res;
   } catch (e) {
-    return console.log(e);
+    throw new IllegalStateException("Unable to Encode Password");
   }
 };
 
@@ -18,6 +19,6 @@ export const matches = async (
     const res = await bcrypt.compare(enteredPassword, savedPassword);
     return res;
   } catch (e) {
-    return console.log(e);
+    throw new IllegalStateException("Unable to Verify Password");
   }
 };

@@ -1,4 +1,5 @@
 import { User } from "models";
+import { InvalidKeyException } from "models/exceptions";
 import { Service } from "typedi";
 import { TokenUtils } from "../utils/security/JWTTokenUtils";
 import { encode, matches } from "../utils/security/PasswordEncoder";
@@ -20,13 +21,15 @@ export class AuthService {
     | undefined
   > => {
     const user = await this.auth.findById({ username });
-    console.log("USER:", user);
     if (user) {
       const result = await matches(password, user.password);
+      console.log("RESULT", result);
       if (result) {
         // TODO token
         const authToken = "";
         return { user, authToken };
+      } else {
+        throw new InvalidKeyException("Invalid Password");
       }
     }
   };
