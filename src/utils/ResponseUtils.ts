@@ -2,14 +2,14 @@ import { BaseException } from "models/exceptions";
 import { DokiResponse } from "models";
 
 export class ResponseUtils {
-  private response: DokiResponse = { success: false };
+  private response: DokiResponse = { success: false, result: {} };
 
   public validate = (status: boolean, error?: BaseException) => {
     this.response.success = status;
     this.response.error = error;
   };
 
-  public put = (key: string, value: object) => {
+  public put = (key: string, value: any) => {
     this.response.result[key] = value;
   };
 

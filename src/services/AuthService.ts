@@ -1,8 +1,7 @@
 import { User } from "models";
 import { Service } from "typedi";
-import { InvalidKeyException } from "../models/exceptions";
 import { TokenUtils } from "../utils/security/JWTTokenUtils";
-import { encode, matches } from "../utils/security/PasswordEncoder";
+import { matches } from "../utils/security/PasswordEncoder";
 import { UserRepository } from "./repositories/UserRepository";
 
 @Service()
@@ -13,13 +12,15 @@ export class AuthService {
   public login = async (username: string, password: string) => {
     try {
       const user = await this.auth.findById({ username });
-      if (user) {
+      console.log("USER", user);
+      if (user && user.password) {
         const result = await matches(password, user.password);
         console.log("RESULT", result);
         if (result) {
-          // TODO token
-          const authToken = "";
-          return true;
+          const authToken = await this.generateToken(user);
+          console.log("AUTH TOKEN", authToken);
+          this.clearPrivateData(user);
+          return { authToken, user };
         }
       }
       return false;
@@ -29,7 +30,20 @@ export class AuthService {
     }
   };
 
-  public checkAuthToken = async () => {
-    return await encode("0418");
+  public checkAuthToken = async (token: string) => {
+    const userId = await this.tokenUtil.verifyToken(token);
+    if (userId) {
+      console.log("VERIFY", userId);
+      const user = this.auth.findById({ userId });
+      return user;
+    }
+  };
+
+  public generateToken = (user: User) => {
+    return this.tokenUtil.generateAuthToken(user);
+  };
+
+  private clearPrivateData = (user: User) => {
+    user.password = undefined;
   };
 }

@@ -1,28 +1,46 @@
+import * as jwt from "jsonwebtoken";
 import { env } from "../../configs/env";
-import jwt from "jsonwebtoken";
 import { User } from "../../models/";
-import { NoResultException } from "../../models/exceptions/NoResultException";
+import {
+  IllegalStateException,
+  InvalidKeyException,
+  NoResultException,
+} from "../../models/exceptions";
 
 export class TokenUtils {
-  private accessTokenSecret = env.utils.JWT_TOKEN_SECRET;
+  private accessTokenSecret = env.utils.JWT_TOKEN_SECRET || "";
 
-  private doGenerateToken(
+  private doGenerateToken = async (
     userId: string,
     secret?: string
     // expiresAfter: number
-  ) {
-    if (!secret) {
-      throw new NoResultException();
+  ) => {
+    try {
+      if (!secret) {
+        throw new NoResultException();
+      }
+      return jwt.sign(userId, secret);
+    } catch (e) {
+      console.log(e);
+      throw new IllegalStateException("Unable to generate Token");
     }
     // to allow expiration
     // return jwt.sign(userId, secret, { expiresIn: "24h" });
-    return jwt.sign(userId, secret);
-  }
+  };
 
-  public generateAuthToken(user: User) {
+  public generateAuthToken = (user: User) => {
     if (!user) {
       throw new NoResultException();
     }
-    return this.doGenerateToken(user.user_Id, this.accessTokenSecret);
-  }
+    return this.doGenerateToken(user.userId, this.accessTokenSecret);
+  };
+
+  public verifyToken = async (token: string) => {
+    try {
+      return jwt.verify(token, this.accessTokenSecret) as string;
+    } catch (e) {
+      console.log(e);
+      throw new InvalidKeyException("Invalid Token");
+    }
+  };
 }
