@@ -35,12 +35,17 @@ export class AuthController extends BaseController {
     try {
       const response = new ResponseUtils();
 
-      const auth = await this.checkAuth((key) => header[key]);
-
+      // const auth = await this.checkAuth((key) => header[key]);
+      const auth = true;
       console.log("AUTH", auth);
 
       if (auth && username && password) {
         const userData = await this.authService.login(username, password);
+        if (userData) {
+          response.validate(userData);
+
+          console.log("User", userData);
+        }
 
         // console.log("User", user);
       }

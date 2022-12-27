@@ -1,5 +1,5 @@
 import * as bcrypt from "bcrypt";
-import { IllegalStateException } from "models/exceptions";
+import { IllegalStateException } from "../../models/exceptions";
 
 export const encode = async (password: string) => {
   try {

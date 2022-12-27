@@ -7,21 +7,21 @@ interface BaseRepository<T> {
 }
 
 export abstract class DokiRepository<T> implements BaseRepository<T> {
-  constructor(public readonly tableName: string) {
-    this.qb = qb(tableName);
+  constructor(public readonly name: string) {
+    this.tableName = name;
   }
-  public readonly qb: Knex.QueryBuilder;
+  private tableName: string;
 
   findAll(item: Partial<T>): Promise<T[]> {
-    return this.qb.where(item).select();
+    return qb(this.tableName).where(item).select();
   }
 
   async findById(id: Partial<T>): Promise<T> {
-    return await this.qb.where(id).first();
+    return await qb(this.tableName).where(id).first();
   }
 
   async save(item: T): Promise<T> {
-    const [output] = await this.qb.insert<T>(item).returning("*");
+    const [output] = await qb(this.tableName).insert<T>(item).returning("*");
 
     return output;
   }

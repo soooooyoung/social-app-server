@@ -1,6 +1,6 @@
 import { User } from "models";
-import { InvalidKeyException } from "models/exceptions";
 import { Service } from "typedi";
+import { InvalidKeyException } from "../models/exceptions";
 import { TokenUtils } from "../utils/security/JWTTokenUtils";
 import { encode, matches } from "../utils/security/PasswordEncoder";
 import { UserRepository } from "./repositories/UserRepository";
@@ -10,27 +10,22 @@ export class AuthService {
   private auth: UserRepository = new UserRepository();
   private tokenUtil: TokenUtils = new TokenUtils();
 
-  public login = async (
-    username: string,
-    password: string
-  ): Promise<
-    | {
-        user: User;
-        authToken: string;
+  public login = async (username: string, password: string) => {
+    try {
+      const user = await this.auth.findById({ username });
+      if (user) {
+        const result = await matches(password, user.password);
+        console.log("RESULT", result);
+        if (result) {
+          // TODO token
+          const authToken = "";
+          return true;
+        }
       }
-    | undefined
-  > => {
-    const user = await this.auth.findById({ username });
-    if (user) {
-      const result = await matches(password, user.password);
-      console.log("RESULT", result);
-      if (result) {
-        // TODO token
-        const authToken = "";
-        return { user, authToken };
-      } else {
-        throw new InvalidKeyException("Invalid Password");
-      }
+      return false;
+    } catch (e) {
+      console.log(e);
+      throw e;
     }
   };
 
