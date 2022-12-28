@@ -43,7 +43,7 @@ export class AuthService {
     return this.tokenUtil.generateAuthToken(user);
   };
 
-  private clearPrivateData = (user: User) => {
+  public clearPrivateData = (user: User) => {
     user.password = undefined;
   };
 }

@@ -1,4 +1,5 @@
-import { Response, Request } from "express";
+import { Response } from "express";
+import * as dayjs from "dayjs";
 import {
   JsonController,
   HttpCode,
@@ -8,6 +9,7 @@ import {
   Req,
   HeaderParams,
   Body,
+  CookieParam,
 } from "routing-controllers";
 import { AuthService } from "../services/AuthService";
 import { Inject, Service } from "typedi";
@@ -36,17 +38,20 @@ export class AuthController extends BaseController {
     try {
       const response = new ResponseUtils();
       const auth = await this.checkAuth((key) => header[key]);
-      console.log("AUTH", auth);
 
       if (auth && username && password) {
         const userData = await this.authService.login(username, password);
-        console.log("RESPONSE", userData);
         if (userData && userData.authToken && userData.user) {
-          response.put("authToken", userData.authToken);
+          res.cookie("token", userData.authToken, {
+            secure: false, // for testing purpose
+            httpOnly: true,
+            expires: dayjs().add(7, "days").toDate(),
+          });
           response.put("user", userData.user);
           response.validate(true);
         }
       }
+
       return res.status(200).json(response.getMono());
     } catch (e) {
       console.log(e);
@@ -65,15 +70,20 @@ export class AuthController extends BaseController {
   public async accessToken(
     @Res() res: Response,
     @HeaderParams() header: BaseHeaderParam,
-    @Body() { authToken }: AuthTokenParam
+    @CookieParam("token") authToken: string
   ) {
     try {
       const response = new ResponseUtils();
       const auth = await this.checkAuth((key) => header[key]);
 
       if (auth && authToken) {
-        const result = await this.authService.checkAuthToken(authToken);
-        console.log("RESULT:", result);
+        const user = await this.authService.checkAuthToken(authToken);
+        if (user) {
+          this.authService.clearPrivateData(user);
+          response.put("authToken", authToken);
+          response.put("user", user);
+          response.validate(true);
+        }
       }
 
       return res.status(200).json(response.getMono());
