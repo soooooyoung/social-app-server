@@ -1,7 +1,8 @@
 export interface Post {
-  post_Id: string;
+  postId: string;
   userId: string;
   created_date: string;
   updated_date?: string;
   content?: string;
+  likes: string[]; // liked userIds
 }

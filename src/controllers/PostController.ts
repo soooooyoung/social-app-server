@@ -10,6 +10,7 @@ import {
   HeaderParams,
   Param,
   CookieParam,
+  Body,
 } from "routing-controllers";
 import { PostService } from "../services/PostService";
 import { BaseController } from "./BaseController";
@@ -63,12 +64,27 @@ export class PostController extends BaseController {
    * Create
    */
   @HttpCode(200)
-  @Post("/")
-  public async createPost(@Res() res: Response) {
+  @Post("/:userId")
+  public async createPost(
+    @Res() res: Response,
+    @Body() data: PostData,
+    @Param("userId") userId: string,
+    @HeaderParams() header: BaseHeaderParam,
+    @CookieParam("token") authToken: string
+  ) {
     try {
-      return res.status(200).json({
-        success: true,
-        error: null,
+      const auth = await this.checkAuth((key) => header[key]);
+
+      if (auth && userId && authToken && data) {
+        const result = await this.postService.savePost(userId, authToken, data);
+        if (result) {
+          return res.status(200).json(`${result} has Been Added`);
+        }
+      }
+
+      return res.status(401).json({
+        success: false,
+        error: "Unauthorized",
       });
     } catch (e) {
       return res.status(400).json({
@@ -100,12 +116,31 @@ export class PostController extends BaseController {
    * Delete
    */
   @HttpCode(200)
-  @Delete("/")
-  public async deletePost(@Res() res: Response) {
+  @Delete("/:userId/:postId")
+  public async deletePost(
+    @Res() res: Response,
+    @Param("postId") postId: string,
+    @Param("userId") userId: string,
+    @HeaderParams() header: BaseHeaderParam,
+    @CookieParam("token") authToken: string
+  ) {
     try {
-      return res.status(200).json({
-        success: true,
-        error: null,
+      const auth = await this.checkAuth((key) => header[key]);
+
+      if (auth && userId && authToken && postId) {
+        const result = await this.postService.deletePostById(
+          userId,
+          authToken,
+          postId
+        );
+
+        if (result) {
+          return res.status(200).json(`${result} Has Been Added`);
+        }
+      }
+      return res.status(401).json({
+        success: false,
+        error: "Unauthorized",
       });
     } catch (e) {
       return res.status(400).json({

@@ -10,9 +10,19 @@ export abstract class DokiRepository<T> implements BaseRepository<T> {
   constructor(public readonly name: string) {
     this.tableName = name;
   }
-  private tableName: string;
+  protected tableName: string;
 
-  async findAll(item: Partial<T>): Promise<T[]> {
+  async findAll(
+    item: Partial<T>,
+    sortBy?: keyof T,
+    direction?: "desc" | "asc"
+  ): Promise<T[]> {
+    if (sortBy) {
+      return await qb(this.tableName)
+        .where(item)
+        .select()
+        .orderBy(sortBy, direction ?? "desc");
+    }
     return await qb(this.tableName).where(item).select();
   }
 
