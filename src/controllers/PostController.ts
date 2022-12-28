@@ -11,11 +11,13 @@ import {
   Param,
   CookieParam,
   Body,
+  Patch,
 } from "routing-controllers";
 import { PostService } from "../services/PostService";
 import { BaseController } from "./BaseController";
 import { BaseHeaderParam, Post as PostData } from "../models";
 
+//TODO: change all parameters to object for safer transportation
 @Service()
 @JsonController("/v1/posts")
 export class PostController extends BaseController {
@@ -97,9 +99,28 @@ export class PostController extends BaseController {
    * Update
    */
   @HttpCode(200)
-  @Post("/")
-  public async updatePost(@Res() res: Response) {
+  @Patch("/:userId")
+  public async updatePost(
+    @Res() res: Response,
+    @Body() data: PostData,
+    @Param("userId") userId: string,
+    @HeaderParams() header: BaseHeaderParam,
+    @CookieParam("token") authToken: string
+  ) {
     try {
+      const auth = await this.checkAuth((key) => header[key]);
+
+      if (auth && userId && authToken && data) {
+        const result = await this.postService.updatePost(
+          userId,
+          authToken,
+          data
+        );
+        if (result) {
+          return res.status(200).json("Updated Successfully");
+        }
+      }
+
       return res.status(200).json({
         success: true,
         error: null,

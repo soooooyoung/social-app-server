@@ -12,13 +12,13 @@ export class AuthService {
   public login = async (username: string, password: string) => {
     try {
       const user = await this.auth.findById({ username });
-      console.log("USER", user);
+
       if (user && user.password) {
         const result = await matches(password, user.password);
-        console.log("RESULT", result);
+
         if (result) {
           const authToken = await this.generateToken(user);
-          console.log("AUTH TOKEN", authToken);
+
           this.clearPrivateData(user);
           return { authToken, user };
         }
@@ -33,7 +33,6 @@ export class AuthService {
   public checkAuthToken = async (token: string) => {
     const userId = await this.tokenUtil.verifyToken(token);
     if (userId) {
-      console.log("VERIFY", userId);
       const user = await this.auth.findById({ userId });
       return user;
     }

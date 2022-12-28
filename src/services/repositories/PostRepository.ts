@@ -15,4 +15,14 @@ export class PostRepository extends DokiRepository<Post> {
       .whereIn(["userId", "postId"], [[userId, postId]])
       .del();
   }
+
+  async update(
+    userId: User["userId"],
+    postId: Post["postId"],
+    item: Post
+  ): Promise<boolean> {
+    return await qb(this.tableName)
+      .whereIn(["userId", "postId"], [[userId, postId]])
+      .update(item);
+  }
 }

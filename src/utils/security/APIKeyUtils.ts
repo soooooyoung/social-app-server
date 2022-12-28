@@ -22,7 +22,6 @@ export class APIKeyUtils {
         if (validHash) {
           const enc = new EncryptionUtils();
           const serviceId = enc.decrypt(userHex);
-          console.log("SUCCESS", serviceId);
           return serviceId;
         } else {
           throw new Error("invalid hash");

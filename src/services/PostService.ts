@@ -48,7 +48,23 @@ export class PostService {
           ...post,
           userId,
         });
-        console.log("SAVE POST", result);
+        return result;
+      }
+      return false;
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
+  };
+
+  public updatePost = async (userId: string, authToken: string, post: Post) => {
+    try {
+      const checkPermissions = await this.compareAuthToken(userId, authToken);
+      if (checkPermissions) {
+        const result = await this.posts.update(userId, post.postId, {
+          ...post,
+          userId,
+        });
         return result;
       }
       return false;
@@ -67,7 +83,7 @@ export class PostService {
       const checkPermissions = await this.compareAuthToken(userId, authToken);
       if (checkPermissions) {
         const result = await this.posts.delete(userId, postId);
-        console.log("DELETE POST", result);
+
         return result;
       }
       return false;
