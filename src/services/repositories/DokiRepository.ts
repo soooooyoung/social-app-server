@@ -12,8 +12,8 @@ export abstract class DokiRepository<T> implements BaseRepository<T> {
   }
   private tableName: string;
 
-  findAll(item: Partial<T>): Promise<T[]> {
-    return qb(this.tableName).where(item).select();
+  async findAll(item: Partial<T>): Promise<T[]> {
+    return await qb(this.tableName).where(item).select();
   }
 
   async findById(id: Partial<T>): Promise<T> {

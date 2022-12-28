@@ -1,5 +1,4 @@
-import { Response } from "express";
-import { BaseHeaderParam } from "../models";
+import { BaseHeaderParam, User } from "../models";
 import { JsonController } from "routing-controllers";
 import { AuthRepository } from "../services/repositories";
 import { Service } from "typedi";

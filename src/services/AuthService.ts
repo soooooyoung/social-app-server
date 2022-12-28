@@ -34,7 +34,7 @@ export class AuthService {
     const userId = await this.tokenUtil.verifyToken(token);
     if (userId) {
       console.log("VERIFY", userId);
-      const user = this.auth.findById({ userId });
+      const user = await this.auth.findById({ userId });
       return user;
     }
   };

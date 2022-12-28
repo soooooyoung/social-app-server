@@ -13,7 +13,7 @@ import {
 } from "routing-controllers";
 import { AuthService } from "../services/AuthService";
 import { Inject, Service } from "typedi";
-import { LoginParam, BaseHeaderParam, AuthTokenParam } from "../models";
+import { LoginParam, BaseHeaderParam } from "../models";
 import { BaseController } from "./BaseController";
 import { ResponseUtils } from "../utils/ResponseUtils";
 
