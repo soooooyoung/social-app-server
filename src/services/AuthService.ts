@@ -1,5 +1,6 @@
 import { User } from "models";
 import { Service } from "typedi";
+import { clearPrivateData } from "utils/security/dataUtils";
 import { TokenUtils } from "../utils/security/JWTTokenUtils";
 import { matches } from "../utils/security/PasswordEncoder";
 import { UserRepository } from "./repositories/UserRepository";
@@ -19,7 +20,7 @@ export class AuthService {
         if (result) {
           const authToken = await this.generateToken(user);
 
-          this.clearPrivateData(user);
+          clearPrivateData(user);
           return { authToken, user };
         }
       }
@@ -40,9 +41,5 @@ export class AuthService {
 
   public generateToken = (user: User) => {
     return this.tokenUtil.generateAuthToken(user);
-  };
-
-  public clearPrivateData = (user: User) => {
-    user.password = undefined;
   };
 }

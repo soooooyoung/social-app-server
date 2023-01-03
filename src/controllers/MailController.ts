@@ -1,25 +1,22 @@
 import { Response } from "express";
 import { JsonController, HttpCode, Post, Res, Body } from "routing-controllers";
 import { Inject, Service } from "typedi";
-import { UserService } from "../services/UserService";
+import { MailService } from "../services/MailService";
 import { User } from "../models";
 
 @Service()
-@JsonController("/v1/signup")
-export class SignUpController {
+@JsonController("/v1/mail")
+export class MailController {
   @Inject()
-  private userService: UserService = new UserService();
+  private mailService: MailService = new MailService();
 
   /**
-   * SIGNUP
+   * Mail
    */
   @HttpCode(200)
-  @Post("")
-  public async signUp(@Res() res: Response, @Body() user: User) {
+  @Post("/send")
+  public async signUp(@Res() res: Response) {
     try {
-      const response = await this.userService.signUpUser(user);
-
-      console.log("SIGN UP RESULT:", response);
       return res.status(200).json({
         success: true,
         error: null,

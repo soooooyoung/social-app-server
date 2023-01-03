@@ -16,6 +16,7 @@ import { Inject, Service } from "typedi";
 import { LoginParam, BaseHeaderParam } from "../models";
 import { BaseController } from "./BaseController";
 import { ResponseUtils } from "../utils/ResponseUtils";
+import { clearPrivateData } from "utils/security/dataUtils";
 
 @Service()
 @JsonController("/v1")
@@ -77,9 +78,9 @@ export class AuthController extends BaseController {
       const auth = await this.checkAuth((key) => header[key]);
 
       if (auth && authToken) {
-        const user = await this.authService.checkAuthToken(authToken);
+        let user = await this.authService.checkAuthToken(authToken);
         if (user) {
-          this.authService.clearPrivateData(user);
+          user = clearPrivateData(user);
           response.put("authToken", authToken);
           response.put("user", user);
           response.validate(true);
