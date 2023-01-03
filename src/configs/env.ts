@@ -19,4 +19,10 @@ export const env = {
       ? parseInt(process.env.MY_SQL_DB_CONNECTION_LIMIT)
       : 4,
   },
+  email: {
+    EMAIL_HOST: process.env.EMAIL_HOST,
+    EMAIL_AUTH_USER: process.env.EMAIL_AUTH_USER,
+    EMAIL_AUTH_PASS: process.env.EMAIL_AUTH_PASS,
+  },
+  client: process.env.CLIENT,
 };

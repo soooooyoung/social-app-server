@@ -11,28 +11,39 @@ export class TokenUtils {
   private accessTokenSecret = env.utils.JWT_TOKEN_SECRET || "";
 
   private doGenerateToken = async (
-    userId: string,
-    secret?: string
-    // expiresAfter: number
+    payload: string | object,
+    secret?: string,
+    expiresIn?: string | number
   ) => {
     try {
       if (!secret) {
         throw new NoResultException();
       }
-      return jwt.sign(userId, secret);
+      if (expiresIn) {
+        return jwt.sign(payload, secret, { expiresIn: expiresIn });
+      }
+      return jwt.sign(payload, secret);
     } catch (e) {
       console.log(e);
       throw new IllegalStateException("Unable to generate Token");
     }
-    // to allow expiration
-    // return jwt.sign(userId, secret, { expiresIn: "24h" });
   };
 
-  public generateAuthToken = (user: User) => {
+  public generateAuthToken = (user: User, expiresIn?: string | number) => {
     if (!user) {
       throw new NoResultException();
     }
-    return this.doGenerateToken(user.userId, this.accessTokenSecret);
+    return this.doGenerateToken(user.userId, this.accessTokenSecret, expiresIn);
+  };
+
+  public generateToken = (
+    payload: string | object,
+    expiresIn?: string | number
+  ) => {
+    if (!payload) {
+      throw new NoResultException();
+    }
+    return this.doGenerateToken(payload, this.accessTokenSecret, expiresIn);
   };
 
   public verifyToken = async (token: string) => {

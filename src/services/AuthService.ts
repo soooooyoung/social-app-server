@@ -1,6 +1,6 @@
 import { User } from "models";
 import { Service } from "typedi";
-import { clearPrivateData } from "utils/security/dataUtils";
+import { clearPrivateData } from "../utils/security/dataUtils";
 import { TokenUtils } from "../utils/security/JWTTokenUtils";
 import { matches } from "../utils/security/PasswordEncoder";
 import { UserRepository } from "./repositories/UserRepository";

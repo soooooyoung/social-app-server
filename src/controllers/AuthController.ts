@@ -16,7 +16,7 @@ import { Inject, Service } from "typedi";
 import { LoginParam, BaseHeaderParam } from "../models";
 import { BaseController } from "./BaseController";
 import { ResponseUtils } from "../utils/ResponseUtils";
-import { clearPrivateData } from "utils/security/dataUtils";
+import { clearPrivateData } from "../utils/security/dataUtils";
 
 @Service()
 @JsonController("/v1")
@@ -44,7 +44,7 @@ export class AuthController extends BaseController {
         const userData = await this.authService.login(username, password);
         if (userData && userData.authToken && userData.user) {
           res.cookie("token", userData.authToken, {
-            secure: false, // for testing purpose
+            secure: true,
             httpOnly: true,
             expires: dayjs().add(7, "days").toDate(),
           });
