@@ -1,4 +1,4 @@
-# NSUS - Social Media App Server (BE)
+# SNSUS - Social Media App Server (BE)
 
 ## Built With
 
