@@ -2,6 +2,7 @@ import { env } from "../../configs/env";
 import { createHmac } from "crypto";
 import { IllegalStateException } from "../../models/exceptions";
 import { EncryptionUtils } from "./EncryptionUtils";
+import { logError } from "../../utils/Logger";
 
 export class APIKeyUtils {
   private SECRETKEY = env.utils.API_KEY_SECRET || "";
@@ -28,6 +29,7 @@ export class APIKeyUtils {
         }
       }
     } catch (e) {
+      logError(e);
       throw new IllegalStateException("failed to create HMAC:" + e);
     }
   };
@@ -42,6 +44,7 @@ export class APIKeyUtils {
 
       return `${userHex}${this.SEPARATOR}${hash}`;
     } catch (e) {
+      logError(e);
       throw new IllegalStateException("failed to create HMAC: " + e);
     }
   };

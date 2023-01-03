@@ -3,6 +3,7 @@ import { TokenUtils } from "../utils/security/JWTTokenUtils";
 import { encode } from "../utils/security/PasswordEncoder";
 import { User } from "../models";
 import { UserRepository } from "./repositories/UserRepository";
+import { logError } from "../utils/Logger";
 
 @Service()
 export class UserService {
@@ -26,7 +27,7 @@ export class UserService {
       }
       return {};
     } catch (e) {
-      console.log(e);
+      logError(e);
       throw e;
     }
   };

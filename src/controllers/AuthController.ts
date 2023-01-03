@@ -17,6 +17,7 @@ import { LoginParam, BaseHeaderParam } from "../models";
 import { BaseController } from "./BaseController";
 import { ResponseUtils } from "../utils/ResponseUtils";
 import { clearPrivateData } from "../utils/security/dataUtils";
+import { logError, logInfo } from "../utils/Logger";
 
 @Service()
 @JsonController("/v1")
@@ -50,12 +51,13 @@ export class AuthController extends BaseController {
           });
           response.put("user", userData.user);
           response.validate(true);
+          logInfo("USER LOGIN:", userData.user);
         }
       }
 
       return res.status(200).json(response.getMono());
     } catch (e) {
-      console.log(e);
+      logError(e);
       return res.status(400).json({
         success: false,
         error: e,
@@ -84,12 +86,13 @@ export class AuthController extends BaseController {
           response.put("authToken", authToken);
           response.put("user", user);
           response.validate(true);
+          logInfo("USER PROVIDED AUTH TOKEN:", user);
         }
       }
 
       return res.status(200).json(response.getMono());
     } catch (e) {
-      console.log(e);
+      logError(e);
       return res.status(400).json({
         success: false,
         error: e,

@@ -4,6 +4,7 @@ import * as bodyParser from "body-parser";
 import { Container } from "typedi";
 import { useContainer, useExpressServer } from "routing-controllers";
 import { routingControllerOptions } from "./configs/RoutingConfig";
+import { logError, logInfo } from "./utils/Logger";
 
 export class DokiServer {
   public PORT: number = Number(process.env.PORT) || 9000;
@@ -23,12 +24,12 @@ export class DokiServer {
     return new Promise<void>((resolve, reject) => {
       this.app
         .listen(this.PORT, () => {
-          console.log(`SERVER START ON PORT : ${this.PORT}`);
+          logInfo(`SERVER START ON PORT : ${this.PORT}`);
 
           return resolve();
         })
         .on("error", (e) => {
-          console.log("SERVER START ERROR : ", e);
+          logError("SERVER START ERROR : ", e);
 
           return reject(e);
         });

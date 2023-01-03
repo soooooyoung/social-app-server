@@ -16,6 +16,7 @@ import {
 import { PostService } from "../services/PostService";
 import { BaseController } from "./BaseController";
 import { BaseHeaderParam, Post as PostData } from "../models";
+import { logError } from "../utils/Logger";
 
 //TODO: change all parameters to object for safer transportation
 @Service()
@@ -55,6 +56,7 @@ export class PostController extends BaseController {
         error: "Unauthorized",
       });
     } catch (e) {
+      logError(e);
       return res.status(400).json({
         success: false,
         error: e,
@@ -89,6 +91,7 @@ export class PostController extends BaseController {
         error: "Unauthorized",
       });
     } catch (e) {
+      logError(e);
       return res.status(400).json({
         success: false,
         error: e,
@@ -126,6 +129,7 @@ export class PostController extends BaseController {
         error: null,
       });
     } catch (e) {
+      logError(e);
       return res.status(400).json({
         success: false,
         error: e,
@@ -164,6 +168,7 @@ export class PostController extends BaseController {
         error: "Unauthorized",
       });
     } catch (e) {
+      logError(e);
       return res.status(400).json({
         success: false,
         error: e,

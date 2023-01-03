@@ -3,6 +3,7 @@ import { JsonController, HttpCode, Post, Res, Body } from "routing-controllers";
 import { Inject, Service } from "typedi";
 import { UserService } from "../services/UserService";
 import { User } from "../models";
+import { logError, logInfo } from "../utils/Logger";
 
 @Service()
 @JsonController("/v1/signup")
@@ -19,12 +20,13 @@ export class SignUpController {
     try {
       const response = await this.userService.signUpUser(user);
 
-      console.log("SIGN UP RESULT:", response);
+      logInfo("USER SIGN UP:", user);
       return res.status(200).json({
         success: true,
         error: null,
       });
     } catch (e) {
+      logError(e);
       return res.status(400).json({
         success: false,
         error: e,

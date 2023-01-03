@@ -13,6 +13,7 @@ import { MailService } from "../services/MailService";
 import { BaseHeaderParam } from "../models";
 import { BaseController } from "./BaseController";
 import { ResponseUtils } from "../utils/ResponseUtils";
+import { logError, logInfo } from "../utils/Logger";
 
 @Service()
 @JsonController("/v1/mail")
@@ -38,9 +39,11 @@ export class MailController extends BaseController {
         await this.mailService.sendMail(email, token);
         response.put("sent", email);
         response.validate(true);
+        logInfo("CONFIRMATION EMAIL SENT TO", email);
       }
       return res.status(200).json(response.getMono());
     } catch (e) {
+      logError(e);
       return res.status(400).json({
         success: false,
         error: e,

@@ -3,6 +3,7 @@ import { IllegalStateException } from "../models/exceptions";
 import { TokenUtils } from "../utils/security/JWTTokenUtils";
 import { PostRepository } from "./repositories/PostRepository";
 import { Post } from "../models";
+import { logError } from "../utils/Logger";
 
 @Service()
 export class PostService {
@@ -17,6 +18,7 @@ export class PostService {
       }
       return false;
     } catch (e) {
+      logError(e);
       throw new IllegalStateException("Unable to Compare Auth Token");
     }
   };
@@ -35,7 +37,7 @@ export class PostService {
       }
       return false;
     } catch (e) {
-      console.log(e);
+      logError(e);
       throw e;
     }
   };
@@ -52,7 +54,7 @@ export class PostService {
       }
       return false;
     } catch (e) {
-      console.log(e);
+      logError(e);
       throw e;
     }
   };
@@ -69,7 +71,7 @@ export class PostService {
       }
       return false;
     } catch (e) {
-      console.log(e);
+      logError(e);
       throw e;
     }
   };
@@ -88,7 +90,7 @@ export class PostService {
       }
       return false;
     } catch (e) {
-      console.log(e);
+      logError(e);
       throw e;
     }
   };

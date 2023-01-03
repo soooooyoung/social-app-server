@@ -4,6 +4,7 @@ import { MailOptions } from "nodemailer/lib/sendmail-transport";
 import { IllegalStateException } from "../models/exceptions";
 import { TokenUtils } from "../utils/security/JWTTokenUtils";
 import { env } from "../configs/env";
+import { logError } from "../utils/Logger";
 
 const { email, client } = env;
 @Service()
@@ -27,7 +28,7 @@ export class MailService {
       const token = await this.tokenUtils.generateToken({ email }, 60 * 30);
       return token;
     } catch (e) {
-      console.log(e);
+      logError(e);
       throw e;
     }
   };
@@ -45,7 +46,7 @@ export class MailService {
       this.smtpTransport.close();
     } catch (e) {
       this.smtpTransport.close();
-      console.log(e);
+      logError(e);
       throw new IllegalStateException("Unable to send email");
     }
   };

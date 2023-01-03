@@ -1,5 +1,6 @@
 import { User } from "models";
 import { Service } from "typedi";
+import { logError } from "../utils/Logger";
 import { clearPrivateData } from "../utils/security/dataUtils";
 import { TokenUtils } from "../utils/security/JWTTokenUtils";
 import { matches } from "../utils/security/PasswordEncoder";
@@ -26,7 +27,7 @@ export class AuthService {
       }
       return false;
     } catch (e) {
-      console.log(e);
+      logError(e);
       throw e;
     }
   };

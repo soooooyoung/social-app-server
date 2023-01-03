@@ -1,4 +1,5 @@
 import * as bcrypt from "bcrypt";
+import { logError } from "../../utils/Logger";
 import { IllegalStateException } from "../../models/exceptions";
 
 export const encode = async (password: string) => {
@@ -7,6 +8,7 @@ export const encode = async (password: string) => {
     const res = await bcrypt.hash(password, salt);
     return res;
   } catch (e) {
+    logError("Unable to Encode Password");
     throw new IllegalStateException("Unable to Encode Password");
   }
 };

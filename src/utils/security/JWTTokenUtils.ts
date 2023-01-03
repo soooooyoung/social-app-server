@@ -1,4 +1,5 @@
 import * as jwt from "jsonwebtoken";
+import { logError } from "../../utils/Logger";
 import { env } from "../../configs/env";
 import { User } from "../../models/";
 import {
@@ -24,13 +25,14 @@ export class TokenUtils {
       }
       return jwt.sign(payload, secret);
     } catch (e) {
-      console.log(e);
+      logError(e);
       throw new IllegalStateException("Unable to generate Token");
     }
   };
 
   public generateAuthToken = (user: User, expiresIn?: string | number) => {
     if (!user) {
+      logError("NO USER IN GENERATE AUTH TOKEN");
       throw new NoResultException();
     }
     return this.doGenerateToken(user.userId, this.accessTokenSecret, expiresIn);
@@ -41,6 +43,7 @@ export class TokenUtils {
     expiresIn?: string | number
   ) => {
     if (!payload) {
+      logError("NO PAYLOAD IN GENERATE TOKEN");
       throw new NoResultException();
     }
     return this.doGenerateToken(payload, this.accessTokenSecret, expiresIn);
@@ -50,7 +53,7 @@ export class TokenUtils {
     try {
       return jwt.verify(token, this.accessTokenSecret) as string;
     } catch (e) {
-      console.log(e);
+      logError(e);
       throw new InvalidKeyException("Invalid Token");
     }
   };
