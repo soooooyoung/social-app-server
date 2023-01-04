@@ -21,7 +21,7 @@
 
 ### Security
 
-✅ Cors implementation
+✅ Cors implementation  
 ✅ Encryption Utility (aes-256-gcm)  
 ✅ JWT Token Implementation for HTTP Only Cookie  
 ✅ API Key utility (verified with every request)  
@@ -36,7 +36,7 @@
 ✅ Send confirmation email  
 🔲 Sign up user
 
-### Post Service
+### Post
 
 ✅ CRUD posts  
 🔲 Like/unlike posts  
