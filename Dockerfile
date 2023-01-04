@@ -5,15 +5,12 @@ RUN localedef -f UTF-8 -i ko_KR ko_KR.UTF-8
 
 ENV APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=1
 
-# Create app directory
+# Create App directory
 RUN mkdir -p /app
 WORKDIR /app
 
-# Create ErrorLogs
-# RUN mkdir -p app/logs/errors
-
-# # Create InfoLogs
-# RUN mkdir -p app/logs/infos
+# Create Log directory
+RUN mkdir -p app/logs/
 
 COPY . /app
 
