@@ -11,6 +11,7 @@
 - [KnexJS](https://knexjs.org/)
 - [MySQL](https://www.mysql.com/)
 - [Winston](https://nodei.co/npm/winston/)
+- [Nodemailer](https://nodemailer.com/about/)
 
 ## Project Todo List
 
@@ -34,7 +35,7 @@
 ### Sign Up
 
 ✅ Send confirmation email  
-🔲 Sign up user
+✅ Sign up user
 
 ### Post
 
