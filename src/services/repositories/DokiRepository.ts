@@ -30,7 +30,7 @@ export abstract class DokiRepository<T> implements BaseRepository<T> {
     return await qb(this.tableName).where(id).first();
   }
 
-  async save(item: T): Promise<T> {
+  async save(item: T): Promise<any> {
     const [output] = await qb(this.tableName).insert<T>(item).returning("*");
 
     return output;

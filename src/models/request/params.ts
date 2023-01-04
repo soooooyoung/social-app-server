@@ -1,4 +1,9 @@
-import { IsNumberString, Length, IsNotEmpty } from "class-validator";
+import {
+  IsNumberString,
+  Length,
+  IsNotEmpty,
+  isNotEmpty,
+} from "class-validator";
 
 export class BaseHeaderParam {
   @IsNotEmpty()
@@ -16,4 +21,20 @@ export class LoginParam extends BaseBodyParam {
 export class AuthTokenParam extends BaseBodyParam {
   @IsNotEmpty()
   public authToken?: string;
+}
+
+export class SignupParam {
+  @IsNotEmpty()
+  public username?: string;
+  @IsNotEmpty()
+  public password?: string;
+  @IsNotEmpty()
+  public type?: string;
+  @IsNotEmpty()
+  public email?: string;
+}
+
+export class SignupEmailLinkParam extends SignupParam {
+  @IsNotEmpty()
+  public token?: string;
 }

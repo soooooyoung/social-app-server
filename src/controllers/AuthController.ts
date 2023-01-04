@@ -5,8 +5,6 @@ import {
   HttpCode,
   Post,
   Res,
-  Header,
-  Req,
   HeaderParams,
   Body,
   CookieParam,
@@ -18,6 +16,7 @@ import { BaseController } from "./BaseController";
 import { ResponseUtils } from "../utils/ResponseUtils";
 import { clearPrivateData } from "../utils/security/dataUtils";
 import { logError, logInfo } from "../utils/Logger";
+import { env } from "../configs/env";
 
 @Service()
 @JsonController("/v1")
@@ -45,7 +44,7 @@ export class AuthController extends BaseController {
         const userData = await this.authService.login(username, password);
         if (userData && userData.authToken && userData.user) {
           res.cookie("token", userData.authToken, {
-            secure: true,
+            secure: env.isProduction,
             httpOnly: true,
             expires: dayjs().add(7, "days").toDate(),
           });

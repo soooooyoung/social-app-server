@@ -5,6 +5,7 @@ import { IllegalStateException } from "../models/exceptions";
 import { TokenUtils } from "../utils/security/JWTTokenUtils";
 import { env } from "../configs/env";
 import { logError } from "../utils/Logger";
+import { User } from "../models";
 
 const { email, client } = env;
 @Service()
@@ -23,9 +24,9 @@ export class MailService {
   private smtpTransport: mailer.Transporter;
   private tokenUtils: TokenUtils = new TokenUtils();
 
-  public generateConfirmationCode = async (email: string) => {
+  public generateConfirmationCode = async (user: User) => {
     try {
-      const token = await this.tokenUtils.generateToken({ email }, 60 * 30);
+      const token = await this.tokenUtils.generateToken(user, 60 * 30);
       return token;
     } catch (e) {
       logError(e);

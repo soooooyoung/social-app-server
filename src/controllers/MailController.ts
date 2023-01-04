@@ -10,7 +10,7 @@ import {
 } from "routing-controllers";
 import { Inject, Service } from "typedi";
 import { MailService } from "../services/MailService";
-import { BaseHeaderParam } from "../models";
+import { BaseHeaderParam, User } from "../models";
 import { BaseController } from "./BaseController";
 import { ResponseUtils } from "../utils/ResponseUtils";
 import { logError, logInfo } from "../utils/Logger";
@@ -25,21 +25,21 @@ export class MailController extends BaseController {
    * Mail
    */
   @HttpCode(200)
-  @Post("/send/:email")
-  public async signUp(
+  @Post("/signup")
+  public async sendSignupEmail(
     @Res() res: Response,
     @HeaderParams() header: BaseHeaderParam,
-    @Param("email") email: string
+    @Body() user: User
   ) {
     try {
       const response = new ResponseUtils();
       const auth = await this.checkAuth((key) => header[key]);
-      if (auth && email !== undefined) {
-        const token = await this.mailService.generateConfirmationCode(email);
-        await this.mailService.sendMail(email, token);
-        response.put("sent", email);
+      if (auth && user.email !== undefined) {
+        const token = await this.mailService.generateConfirmationCode(user);
+        await this.mailService.sendMail(user.email, token);
+        response.put("sent", user.email);
         response.validate(true);
-        logInfo("CONFIRMATION EMAIL SENT TO", email);
+        logInfo("CONFIRMATION EMAIL SENT TO", user.email);
       }
       return res.status(200).json(response.getMono());
     } catch (e) {

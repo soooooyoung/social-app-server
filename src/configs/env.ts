@@ -1,6 +1,8 @@
 import * as dotenv from "dotenv";
 dotenv.config();
 export const env = {
+  isDevelopment: process.env.NODE_ENV === "development",
+  isProduction: process.env.NODE_ENV === "production",
   app: {
     port: Number(process.env.PORT) || 9000,
   },
