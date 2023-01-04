@@ -10,22 +10,51 @@
 - [Class Validator](https://www.npmjs.com/package/class-validator)
 - [KnexJS](https://knexjs.org/)
 - [MySQL](https://www.mysql.com/)
+- [Winston](https://nodei.co/npm/winston/)
 
-## Data Modeling
+## Project Todo List
 
-<img src="src/assets/datamodel.png" alt="prev1" width="500px"/>
+### Database
 
-## Functionalities
+✅ Establish connection to MySQL database  
+✅ Implement data queries with Knex  
+
+### Security
+
+✅ Cors implementation
+✅ Encryption Utility (aes-256-gcm)  
+✅ JWT Token Implementation for HTTP Only Cookie  
+✅ API Key utility (verified with every request)  
+
+### Login
+
+✅ Enable password verification with Bcrypt  
+✅ Generate access token (set-cookie to client)  
+
+### Sign Up
+
+✅ Send confirmation email  
+🔲 Sign up user
+
+### Post Service
+
+✅ CRUD posts  
+🔲 Like/unlike posts  
+🔲 CRUD comments  
 
 ### Common
 
-- Verify Cookies
-- Verify API Key
+✅ Logger implementation with winston  
 
-### Auth Service
-- Verify user account
-- Encode, decode user password
-- Provide Cookies for Auth
+### Deployment
 
-### Post Service
-- Create/Read/Update/Delete Post
+✅ Containerize with Docker  
+✅ Configure Nginx for HTTPS support  
+
+## Data Modeling
+
+### User, Post, Comment
+
+<img src="src/assets/datamodel.png" alt="prev1" width="500px"/>
+
+
