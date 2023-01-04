@@ -9,7 +9,7 @@ import {
 } from "routing-controllers";
 import { Inject, Service } from "typedi";
 import { UserService } from "../services/UserService";
-import { User, SignupParam, SignupEmailLinkParam } from "../models";
+import { User, SignupParam, SignupEmailLinkParam, EmailJWT } from "../models";
 import { logError, logInfo } from "../utils/Logger";
 
 @Service()
@@ -30,8 +30,8 @@ export class SignUpController {
     try {
       if (token) {
         const checkToken = await this.userService.checkSignupToken(token);
-        if (checkToken) {
-          const response = await this.userService.signUpUser(checkToken);
+        if (checkToken && checkToken.user) {
+          const response = await this.userService.signUpUser(checkToken.user);
           return res.status(200).json({
             success: true,
             error: null,

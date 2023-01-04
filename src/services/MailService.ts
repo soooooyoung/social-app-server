@@ -26,7 +26,7 @@ export class MailService {
 
   public generateConfirmationCode = async (user: User) => {
     try {
-      const token = await this.tokenUtils.generateToken(user, 60 * 30);
+      const token = await this.tokenUtils.generateToken({ user }, 60 * 30);
       return token;
     } catch (e) {
       logError(e);

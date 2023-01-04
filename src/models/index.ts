@@ -3,6 +3,7 @@ export type { Post } from "./data/Post";
 export type { Comment } from "./data/Comment";
 export type { Auth } from "./data/Auth";
 export type { DokiResponse } from "./request/response";
+export type { EmailJWT } from "./JWTPayload";
 export {
   LoginParam,
   BaseHeaderParam,

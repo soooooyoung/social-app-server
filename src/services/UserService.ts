@@ -1,7 +1,7 @@
 import { Service } from "typedi";
 import { TokenUtils } from "../utils/security/JWTTokenUtils";
 import { encode } from "../utils/security/PasswordEncoder";
-import { User } from "../models";
+import { User, EmailJWT } from "../models";
 import { UserRepository } from "./repositories/UserRepository";
 import { logError, logInfo } from "../utils/Logger";
 
@@ -27,12 +27,11 @@ export class UserService {
   public signUpUser = async (user: User) => {
     try {
       const isSafe = await this.checkIsSafe(user);
-      console.log("safe", isSafe);
       if (isSafe) {
         if (user && user.password) {
-          console.log("user", user);
           const encodedPw = await encode(user.password);
           user.password = encodedPw;
+          user.status = "ACTIVE";
           const userId = await this.userRepository.save(user);
           if (userId) {
             user.userId = userId;
@@ -42,7 +41,6 @@ export class UserService {
           }
         }
       }
-
       return false;
     } catch (e) {
       logError(e);
@@ -50,10 +48,10 @@ export class UserService {
     }
   };
   public checkSignupToken = async (token: string) => {
-    const user = await this.tokenUtil.verifyToken(token);
-    console.log("CHECKSIGN", user);
-    if (user && typeof user === "object") {
-      return user as User;
+    const payload = await this.tokenUtil.verifyToken(token);
+    logInfo("jwt payload", payload);
+    if (payload && typeof payload === "object") {
+      return payload as EmailJWT;
     }
     return false;
   };
