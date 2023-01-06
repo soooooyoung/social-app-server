@@ -44,10 +44,10 @@ Check if access token is valid by checking browser cookie.
 ### Sign Up
 
 ```http
-POST /signup/email/:token
+GET /signup/verify?token=
 ```
 
-| URL Param | Type | Description |
+| Query Param | Type | Description |
 | :--- | :--- | :--- |
 | token | `string` | **Required**. Token containing user information. MUST BE in format of JSON web token. |
 
@@ -80,7 +80,7 @@ Generate request url from user information and send to user's e-mail to finsh si
 GET /posts/:userId
 ```
 
-| URL Param | Type | Description |
+| Path Param | Type | Description |
 | :--- | :--- | :--- |
 | userId | `string` | **Required**. User identification value.  |
 
@@ -90,7 +90,7 @@ Retrieve all posts written by user with provided user identification.
 POST /posts/:userId
 ```
 
-| URL Param | Type | Description |
+| Path Param | Type | Description |
 | :--- | :--- | :--- |
 | userId | `string` | **Required**. User identification value.  |
 
@@ -104,7 +104,7 @@ Save post in data base. Post ID and created time generated automatically upon sa
 PATCH /posts/:userId/:postId
 ```
 
-| URL Param | Type | Description |
+| Path Param | Type | Description |
 | :--- | :--- | :--- |
 | userId | `string` | **Required**. User identification value.  |
 | postId | `string` | **Required**. Post identification value.  |
@@ -119,7 +119,7 @@ Update post in data base. Update time generated automatically upon update.
 DELETE /posts/:userId/:postId
 ```
 
-| URL Param | Type | Description |
+| Path Param | Type | Description |
 | :--- | :--- | :--- |
 | userId | `string` | **Required**. User identification value.  |
 | postId | `string` | **Required**. Post identification value.  |
