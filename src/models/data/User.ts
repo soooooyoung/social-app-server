@@ -1,9 +1,10 @@
 export interface User {
-  userId: string;
-  username: string;
+  userId?: string;
+  username?: string;
   password?: string;
-  status: "ACTIVE" | "INACTIVE";
-  created_date: string;
+  status?: "ACTIVE" | "INACTIVE";
+  type?: "EMAIL" | "KAKAO" | "NAVER" | "GOOGLE";
+  created_date?: string;
   nickname?: string;
-  email: string;
+  email?: string;
 }

@@ -7,20 +7,13 @@ export class PostRepository extends DokiRepository<Post> {
     super("posts");
   }
 
-  async delete(
-    userId: User["userId"],
-    postId: Post["postId"]
-  ): Promise<number> {
+  async delete(userId: string, postId: string): Promise<number> {
     return await qb(this.tableName)
       .whereIn(["userId", "postId"], [[userId, postId]])
       .del();
   }
 
-  async update(
-    userId: User["userId"],
-    postId: Post["postId"],
-    item: Post
-  ): Promise<boolean> {
+  async update(userId: string, postId: string, item: Post): Promise<boolean> {
     return await qb(this.tableName)
       .whereIn(["userId", "postId"], [[userId, postId]])
       .update(item);

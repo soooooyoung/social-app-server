@@ -24,8 +24,14 @@ export class MailService {
   private smtpTransport: mailer.Transporter;
   private tokenUtils: TokenUtils = new TokenUtils();
 
-  public generateConfirmationCode = async (user: User) => {
+  public generateConfirmationCode = async (newUser: User) => {
     try {
+      const user: User = {
+        username: newUser.username,
+        password: newUser.password,
+        email: newUser.email,
+        type: newUser.type,
+      };
       const token = await this.tokenUtils.generateToken({ user }, 60 * 30);
       return token;
     } catch (e) {
@@ -40,7 +46,7 @@ export class MailService {
         from: "SNSUS Support Team <support@snsus.click>",
         to: email,
         subject: "Confirm your SNSUS account",
-        text: `${client}/signup/verify_email=${token}`,
+        text: `Click following link to finish signing up: ${client}/signup/verify_email/${token}`,
       };
 
       await this.smtpTransport.sendMail(mail);

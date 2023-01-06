@@ -31,7 +31,7 @@ export class TokenUtils {
   };
 
   public generateAuthToken = (user: User, expiresIn?: string | number) => {
-    if (!user) {
+    if (!user || !user.userId) {
       logError("NO USER IN GENERATE AUTH TOKEN");
       throw new NoResultException();
     }

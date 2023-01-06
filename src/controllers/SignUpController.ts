@@ -6,6 +6,8 @@ import {
   Res,
   Body,
   Param,
+  Get,
+  QueryParam,
 } from "routing-controllers";
 import { Inject, Service } from "typedi";
 import { UserService } from "../services/UserService";
@@ -22,20 +24,23 @@ export class SignUpController {
    * SIGNUP THROUGH CONFIRMATION MAIL
    */
   @HttpCode(200)
-  @Post("/email/:token")
-  public async signUpWithEmail(
+  @Get("/verify")
+  public async verifyEmail(
     @Res() res: Response,
-    @Param("token") token: string
+    @QueryParam("token") token: string
   ) {
     try {
       if (token) {
         const checkToken = await this.userService.checkSignupToken(token);
         if (checkToken && checkToken.user) {
           const response = await this.userService.signUpUser(checkToken.user);
-          return res.status(200).json({
-            success: true,
-            error: null,
-          });
+          if (response) {
+            return res.status(200).json({
+              success: true,
+              error: null,
+              result: response,
+            });
+          }
         }
       }
 
@@ -56,23 +61,45 @@ export class SignUpController {
   /**
    * SIGNUP
    */
-  @HttpCode(200)
-  @Post("")
-  public async signUp(@Res() res: Response, @Body() user: SignupParam) {
-    try {
-      const response = await this.userService.signUpUser(user as User);
+  // @HttpCode(200)
+  // @Post("")
+  // public async signUp(@Res() res: Response, @Body() user: SignupParam) {
+  //   try {
+  //     const response = await this.userService.signUpUser(user as User);
 
-      if (!response) {
-        logError("ERROR SIGN UP:", user);
-        return res.status(400).json({
-          success: false,
-          error: "Sign up Failed",
-        });
-      }
+  //     if (!response) {
+  //       logError("ERROR SIGN UP:", user);
+  //       return res.status(400).json({
+  //         success: false,
+  //         error: "Sign up Failed",
+  //       });
+  //     }
+
+  //     return res.status(200).json({
+  //       success: true,
+  //       error: null,
+  //     });
+  //   } catch (e) {
+  //     logError(e);
+  //     return res.status(400).json({
+  //       success: false,
+  //       error: e,
+  //     });
+  //   }
+  // }
+
+  @HttpCode(200)
+  @Post("/check")
+  public async checkDuplicate(@Res() res: Response, @Body() user: SignupParam) {
+    try {
+      const response = await this.userService.checkIsSafe(user as User);
 
       return res.status(200).json({
         success: true,
         error: null,
+        result: {
+          isSafe: response,
+        },
       });
     } catch (e) {
       logError(e);

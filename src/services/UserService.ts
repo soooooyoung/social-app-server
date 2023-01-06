@@ -27,6 +27,7 @@ export class UserService {
   public signUpUser = async (user: User) => {
     try {
       const isSafe = await this.checkIsSafe(user);
+
       if (isSafe) {
         if (user && user.password) {
           const encodedPw = await encode(user.password);
@@ -49,7 +50,6 @@ export class UserService {
   };
   public checkSignupToken = async (token: string) => {
     const payload = await this.tokenUtil.verifyToken(token);
-    logInfo("jwt payload", payload);
     if (payload && typeof payload === "object") {
       return payload as EmailJWT;
     }
