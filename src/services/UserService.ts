@@ -45,7 +45,7 @@ export class UserService {
       return false;
     } catch (e) {
       logError(e);
-      throw e;
+      return false;
     }
   };
   public checkSignupToken = async (token: string) => {

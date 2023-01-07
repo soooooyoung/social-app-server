@@ -35,8 +35,9 @@ export class MailController extends BaseController {
       const response = new ResponseUtils();
       const auth = await this.checkAuth((key) => header[key]);
       if (auth && user.email !== undefined) {
-        const token = await this.mailService.generateConfirmationCode(user);
-        await this.mailService.sendMail(user.email, token);
+        const { username, token } =
+          await this.mailService.generateConfirmationCode(user);
+        await this.mailService.sendMail(user.email, token, username);
         response.put("sent", user.email);
         response.validate(true);
         logInfo("CONFIRMATION EMAIL SENT TO", user.email);
