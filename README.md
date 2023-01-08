@@ -15,7 +15,7 @@
 
 ## API Documentaion
 
-All API requests require the use of generated **API key** and **HTTP cookie**.
+All API requests require the use of generated **API key** and user restricted requests require **HTTP cookie**.
 
 ### Authentication 
 
