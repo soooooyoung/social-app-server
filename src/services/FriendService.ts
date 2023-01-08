@@ -3,10 +3,12 @@ import { Friendship } from "../models";
 import { logError } from "../utils/Logger";
 import { TokenUtils } from "../utils/security/JWTTokenUtils";
 import { FriendshipRepository } from "./repositories/FriendshipRepository";
+import { UserRepository } from "./repositories/UserRepository";
 
 @Service()
 export class FriendService {
   private friendRepository: FriendshipRepository = new FriendshipRepository();
+  private userRepository: UserRepository = new UserRepository();
   private tokenUtils: TokenUtils = new TokenUtils();
 
   public checkUserPermission = async (userId: string, autoToken: string) => {
@@ -98,8 +100,13 @@ export class FriendService {
   public findAllFriendsById = async (userId: string) => {
     try {
       const response = await this.friendRepository.unionAll(userId, "A");
-      console.log("friends", response);
-      return response;
+
+      if (response.length > 0) {
+        const friends = await this.userRepository.findWhereIn(userId, response);
+        console.log("friends", friends);
+        return friends;
+      }
+      return [];
     } catch (e) {
       logError("FRIENDSHIP DELETE FAILED", e);
       throw e;

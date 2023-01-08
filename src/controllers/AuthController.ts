@@ -85,7 +85,6 @@ export class AuthController extends BaseController {
           response.put("authToken", authToken);
           response.put("user", user);
           response.validate(true);
-          logInfo("USER PROVIDED AUTH TOKEN:", user);
         }
       }
 

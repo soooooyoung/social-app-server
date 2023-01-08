@@ -4,7 +4,7 @@ import { DokiRepository } from "./DokiRepository";
 
 export class FriendshipRepository extends DokiRepository<Friendship> {
   constructor() {
-    super("users");
+    super("friendship");
   }
 
   async update(

@@ -35,4 +35,8 @@ export abstract class DokiRepository<T> implements BaseRepository<T> {
 
     return output;
   }
+
+  async findWhereIn(key: string, array: Array<any>) {
+    return await qb(this.tableName).whereIn(key, array).select();
+  }
 }

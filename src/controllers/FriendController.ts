@@ -15,10 +15,7 @@ import {
   QueryParam,
 } from "routing-controllers";
 import { BaseController } from "./BaseController";
-import {
-  BaseHeaderParam,
-  FriendshipParam,
-} from "../models";
+import { BaseHeaderParam, FriendshipParam } from "../models";
 import { logError } from "../utils/Logger";
 import { FriendService } from "../services/FriendService";
 
@@ -50,10 +47,7 @@ export class FriendController extends BaseController {
         if (userPermission) {
           const response = await this.friendService.findAllFriendsById(userId);
           console.log("freinds", response);
-          return res.status(200).json({
-            success: true,
-            result: response,
-          });
+          return res.status(200).json(response);
         }
       }
 
