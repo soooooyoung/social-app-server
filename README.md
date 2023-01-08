@@ -15,7 +15,7 @@
 
 ## API Documentaion
 
-All API requests require the use of generated **API key** and **HTTP cookie**.
+All API requests require the use of generated **API key** and user restricted requests require **HTTP cookie**.
 
 ### Authentication 
 
@@ -167,8 +167,6 @@ Delete post from data base.
 ✅ Configure Nginx for HTTPS support  
 
 ## Data Modeling
-
-### User, Post, Comment
 
 <img src="src/assets/datamodel.png" alt="prev1" width="500px"/>
 
