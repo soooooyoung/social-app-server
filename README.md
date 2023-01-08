@@ -168,8 +168,6 @@ Delete post from data base.
 
 ## Data Modeling
 
-### User, Post, Comment
-
 <img src="src/assets/datamodel.png" alt="prev1" width="500px"/>
 
 
