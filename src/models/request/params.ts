@@ -4,6 +4,7 @@ import {
   IsNotEmpty,
   isNotEmpty,
 } from "class-validator";
+import { Friendship } from "../../models/data/Friendship";
 
 export class BaseHeaderParam {
   @IsNotEmpty()
@@ -37,4 +38,11 @@ export class SignupParam {
 export class SignupEmailLinkParam extends SignupParam {
   @IsNotEmpty()
   public token?: string;
+}
+
+export class FriendshipParam {
+  @IsNotEmpty()
+  public requesterId?: string;
+  @IsNotEmpty()
+  public addresseeId?: string;
 }

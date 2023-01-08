@@ -32,8 +32,8 @@ export class MailController extends BaseController {
     @Body() user: User
   ) {
     try {
-      const response = new ResponseUtils();
       const auth = await this.checkAuth((key) => header[key]);
+      const response = new ResponseUtils();
       if (auth && user.email !== undefined) {
         const { username, token } =
           await this.mailService.generateConfirmationCode(user);

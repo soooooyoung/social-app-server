@@ -8,15 +8,23 @@ import {
   Param,
   Get,
   QueryParam,
+  HeaderParams,
 } from "routing-controllers";
 import { Inject, Service } from "typedi";
 import { UserService } from "../services/UserService";
-import { User, SignupParam, SignupEmailLinkParam, EmailJWT } from "../models";
+import {
+  User,
+  SignupParam,
+  SignupEmailLinkParam,
+  EmailJWT,
+  BaseHeaderParam,
+} from "../models";
 import { logError, logInfo } from "../utils/Logger";
+import { BaseController } from "./BaseController";
 
 @Service()
 @JsonController("/v1/signup")
-export class SignUpController {
+export class SignUpController extends BaseController {
   @Inject()
   private userService: UserService = new UserService();
 
@@ -27,10 +35,13 @@ export class SignUpController {
   @Get("/verify")
   public async verifyEmail(
     @Res() res: Response,
+    @HeaderParams() header: BaseHeaderParam,
     @QueryParam("token") token: string
   ) {
     try {
-      if (token) {
+      const auth = await this.checkAuth((key) => header[key]);
+
+      if (auth && token) {
         const checkToken = await this.userService.checkSignupToken(token);
         if (checkToken && checkToken.user) {
           const response = await this.userService.signUpUser(checkToken.user);
