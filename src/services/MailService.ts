@@ -30,7 +30,6 @@ export class MailService {
         username: newUser.username,
         password: newUser.password,
         email: newUser.email,
-        type: newUser.type,
       };
       const token = await this.tokenUtils.generateToken({ user }, 60 * 30);
       return { username: user.username, token };

@@ -32,7 +32,7 @@ export class UserService {
         if (user && user.password) {
           const encodedPw = await encode(user.password);
           user.password = encodedPw;
-          user.status = "ACTIVE";
+
           const userId = await this.userRepository.save(user);
           if (userId) {
             user.userId = userId;

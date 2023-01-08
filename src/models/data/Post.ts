@@ -4,5 +4,4 @@ export interface Post {
   created_date: string;
   updated_date?: string;
   content?: string;
-  likes: string[]; // liked userIds
 }
