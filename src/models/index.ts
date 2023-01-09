@@ -12,4 +12,5 @@ export {
   SignupParam,
   SignupEmailLinkParam,
   FriendshipParam,
+  UserQueryParams,
 } from "./request/params";

@@ -46,3 +46,12 @@ export class FriendshipParam {
   @IsNotEmpty()
   public addresseeId?: number;
 }
+
+export class UserQueryParams {
+  public userId?: number;
+  public username?: string;
+  public nickname?: string;
+  public email?: string;
+  public statusCode?: string;
+  public typeCode?: string;
+}

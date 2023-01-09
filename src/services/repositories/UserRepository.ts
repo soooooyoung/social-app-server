@@ -14,7 +14,11 @@ export class UserRepository extends DokiRepository<User> {
     );
   }
 
-  async findProfiles(key: string, array: Array<any>, select?: any) {
-    return clearPrivateData(await qb(this.tableName).join(""));
+  async findProfiles(params: Partial<User>) {
+    return clearPrivateData(
+      await qb(this.tableName)
+        .where(params)
+        .select(["nickname, userId, username, email, profileImgUrl"])
+    );
   }
 }

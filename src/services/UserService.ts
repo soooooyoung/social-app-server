@@ -1,7 +1,7 @@
 import { Service } from "typedi";
 import { TokenUtils } from "../utils/security/JWTTokenUtils";
 import { encode } from "../utils/security/PasswordEncoder";
-import { User, EmailJWT } from "../models";
+import { User, EmailJWT, UserQueryParams } from "../models";
 import { UserRepository } from "./repositories/UserRepository";
 import { logError, logInfo } from "../utils/Logger";
 
@@ -9,6 +9,7 @@ import { logError, logInfo } from "../utils/Logger";
 export class UserService {
   private userRepository: UserRepository = new UserRepository();
   private tokenUtil: TokenUtils = new TokenUtils();
+
   private generateToken = (user: User) => {
     return this.tokenUtil.generateAuthToken(user);
   };
@@ -54,5 +55,9 @@ export class UserService {
       return payload;
     }
     return false;
+  };
+
+  public fetchUsers = async (params: UserQueryParams) => {
+    const results = this.userRepository.findProfiles();
   };
 }
