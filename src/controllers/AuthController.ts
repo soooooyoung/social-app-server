@@ -14,7 +14,6 @@ import { Inject, Service } from "typedi";
 import { LoginParam, BaseHeaderParam } from "../models";
 import { BaseController } from "./BaseController";
 import { ResponseUtils } from "../utils/ResponseUtils";
-import { clearPrivateData } from "../utils/security/dataUtils";
 import { logError, logInfo } from "../utils/Logger";
 import { env } from "../configs/env";
 
@@ -79,9 +78,8 @@ export class AuthController extends BaseController {
       const auth = await this.checkAuth((key) => header[key]);
 
       if (auth && authToken) {
-        let user = await this.authService.checkAuthToken(authToken);
+        const user = await this.authService.checkAuthToken(authToken);
         if (user) {
-          user = clearPrivateData(user);
           response.put("authToken", authToken);
           response.put("user", user);
           response.validate(true);

@@ -27,16 +27,15 @@ export abstract class DokiRepository<T> implements BaseRepository<T> {
   }
 
   async findById(id: Partial<T>): Promise<T> {
-    return await qb(this.tableName).where(id).first();
+    return await qb(this.tableName)
+      .where(id)
+      .first()
+      .then((data) => JSON.parse(JSON.stringify(data)));
   }
 
   async save(item: T): Promise<any> {
     const [output] = await qb(this.tableName).insert<T>(item).returning("*");
 
     return output;
-  }
-
-  async findWhereIn(key: string, array: Array<any>) {
-    return await qb(this.tableName).whereIn(key, array).select();
   }
 }

@@ -1,4 +1,5 @@
 import { User } from "models";
+import { AuthTokenJWT } from "models/JWTPayload";
 import { Service } from "typedi";
 import { logError } from "../utils/Logger";
 import { clearPrivateData } from "../utils/security/dataUtils";
@@ -14,13 +15,10 @@ export class AuthService {
   public login = async (username: string, password: string) => {
     try {
       const user = await this.auth.findById({ username });
-
       if (user && user.password) {
         const result = await matches(password, user.password);
-
         if (result) {
           const authToken = await this.generateToken(user);
-
           clearPrivateData(user);
           return { authToken, user };
         }
@@ -33,14 +31,16 @@ export class AuthService {
   };
 
   public checkAuthToken = async (token: string) => {
-    const userId = await this.tokenUtil.verifyToken(token);
-    if (userId) {
-      const user = await this.auth.findById({ userId });
-      return user;
+    const result = await this.tokenUtil.verifyToken<AuthTokenJWT>(token);
+    if (result.user && result.user.userId) {
+      let verifiedUser = await this.auth.findById({
+        userId: result.user.userId,
+      });
+      return verifiedUser;
     }
   };
 
-  public generateToken = (user: User) => {
-    return this.tokenUtil.generateAuthToken(user);
+  public generateToken = async (user: User) => {
+    return await this.tokenUtil.generateAuthToken(user);
   };
 }

@@ -42,7 +42,7 @@ export class SignupEmailLinkParam extends SignupParam {
 
 export class FriendshipParam {
   @IsNotEmpty()
-  public requesterId?: string;
+  public requesterId?: number;
   @IsNotEmpty()
-  public addresseeId?: string;
+  public addresseeId?: number;
 }

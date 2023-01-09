@@ -8,8 +8,8 @@ export class FriendshipRepository extends DokiRepository<Friendship> {
   }
 
   async update(
-    requesterId: string,
-    addresseeId: string,
+    requesterId: number,
+    addresseeId: number,
     item: Friendship
   ): Promise<boolean> {
     return await qb(this.tableName)
@@ -17,13 +17,13 @@ export class FriendshipRepository extends DokiRepository<Friendship> {
       .update(item);
   }
 
-  async delete(requesterId: string, addresseeId: string): Promise<number> {
+  async delete(requesterId: number, addresseeId: number): Promise<number> {
     return await qb(this.tableName)
       .whereIn(["requesterId", "addresseeId"], [[requesterId, addresseeId]])
       .del();
   }
 
-  async unionAll(userId: string, statusCode: Friendship["statusCode"]) {
+  async unionAll(userId: number, statusCode: Friendship["statusCode"]) {
     return await qb(this.tableName)
       .select("*")
       .where({ addresseeId: userId, statusCode })

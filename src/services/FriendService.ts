@@ -1,5 +1,6 @@
+import { IllegalStateException } from "../models/exceptions";
 import { Service } from "typedi";
-import { Friendship } from "../models";
+import { Friendship, AuthTokenJWT } from "../models";
 import { logError } from "../utils/Logger";
 import { TokenUtils } from "../utils/security/JWTTokenUtils";
 import { FriendshipRepository } from "./repositories/FriendshipRepository";
@@ -11,10 +12,10 @@ export class FriendService {
   private userRepository: UserRepository = new UserRepository();
   private tokenUtils: TokenUtils = new TokenUtils();
 
-  public checkUserPermission = async (userId: string, autoToken: string) => {
+  public checkUserPermission = async (userId: number, authToken: string) => {
     try {
-      const tokenId = await this.tokenUtils.verifyToken(autoToken);
-      if (tokenId && tokenId === userId) {
+      const result = await this.tokenUtils.verifyToken<AuthTokenJWT>(authToken);
+      if (result.user && result.user.userId === userId) {
         return true;
       }
       return false;
@@ -25,8 +26,8 @@ export class FriendService {
   };
 
   public createFriendRequest = async (
-    requesterId: string,
-    addresseeId: string
+    requesterId: number,
+    addresseeId: number
   ) => {
     try {
       const newFriendship: Friendship = {
@@ -37,14 +38,14 @@ export class FriendService {
       const response = await this.friendRepository.save(newFriendship);
       return response;
     } catch (e) {
-      logError("FRIEND REQUEST FAILED", e);
-      throw e;
+      logError("Duplicate friend request", e);
+      throw new IllegalStateException("Duplicate friend request");
     }
   };
 
   public findFriendRequest = async (
-    requesterId: string,
-    addresseeId: string
+    requesterId: number,
+    addresseeId: number
   ) => {
     try {
       const friendship = await this.friendRepository.findById({
@@ -59,8 +60,8 @@ export class FriendService {
   };
 
   public acceptFriendRequest = async (
-    requesterId: string,
-    addresseeId: string
+    requesterId: number,
+    addresseeId: number
   ) => {
     try {
       const newFriendship: Friendship = {
@@ -68,7 +69,6 @@ export class FriendService {
         addresseeId,
         statusCode: "A",
       };
-
       const response = await this.friendRepository.update(
         requesterId,
         addresseeId,
@@ -82,8 +82,8 @@ export class FriendService {
   };
 
   public denyFriendRequest = async (
-    requesterId: string,
-    addresseeId: string
+    requesterId: number,
+    addresseeId: number
   ) => {
     try {
       const response = await this.friendRepository.delete(
@@ -97,18 +97,37 @@ export class FriendService {
     }
   };
 
-  public findAllFriendsById = async (userId: string) => {
+  public findAllFriendsById = async (userId: number) => {
     try {
-      const response = await this.friendRepository.unionAll(userId, "A");
+      const response: Friendship[] = await this.friendRepository.unionAll(
+        userId,
+        "A"
+      );
 
       if (response.length > 0) {
-        const friends = await this.userRepository.findWhereIn(userId, response);
-        console.log("friends", friends);
+        const userIds = response.reduce((prev, friendship) => {
+          if (friendship.statusCode !== "A") {
+            return prev;
+          }
+          if (friendship.addresseeId === userId) {
+            prev.push(friendship.requesterId);
+          } else {
+            prev.push(friendship.addresseeId);
+          }
+          return prev;
+        }, [] as number[]);
+
+        const friends = await this.userRepository.findUsers("userId", userIds, [
+          "username",
+          "userId",
+          "profileImgUrl",
+          "nickname",
+        ]);
         return friends;
       }
       return [];
     } catch (e) {
-      logError("FRIENDSHIP DELETE FAILED", e);
+      logError("FRIENDSHIP FINDALL FAILED", e);
       throw e;
     }
   };

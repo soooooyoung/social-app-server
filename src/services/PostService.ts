@@ -2,18 +2,19 @@ import { Service } from "typedi";
 import { IllegalStateException } from "../models/exceptions";
 import { TokenUtils } from "../utils/security/JWTTokenUtils";
 import { PostRepository } from "./repositories/PostRepository";
-import { Post } from "../models";
+import { Post, User } from "../models";
 import { logError } from "../utils/Logger";
+import { AuthTokenJWT } from "../models/";
 
 @Service()
 export class PostService {
   private posts: PostRepository = new PostRepository();
   private tokenUtils: TokenUtils = new TokenUtils();
 
-  private compareAuthToken = async (userId: string, authToken: string) => {
+  private compareAuthToken = async (userId: number, authToken: string) => {
     try {
-      const token = await this.tokenUtils.verifyToken(authToken);
-      if (token === userId) {
+      const token = await this.tokenUtils.verifyToken<AuthTokenJWT>(authToken);
+      if (token.user.userId === userId) {
         return true;
       }
       return false;
@@ -23,7 +24,7 @@ export class PostService {
     }
   };
 
-  public findAllPostsById = async (userId: string, authToken: string) => {
+  public findAllPostsById = async (userId: number, authToken: string) => {
     try {
       const checkPermissions = await this.compareAuthToken(userId, authToken);
       if (checkPermissions) {
@@ -42,7 +43,7 @@ export class PostService {
     }
   };
 
-  public savePost = async (userId: string, authToken: string, post: Post) => {
+  public savePost = async (userId: number, authToken: string, post: Post) => {
     try {
       const checkPermissions = await this.compareAuthToken(userId, authToken);
       if (checkPermissions) {
@@ -59,7 +60,7 @@ export class PostService {
     }
   };
 
-  public updatePost = async (userId: string, authToken: string, post: Post) => {
+  public updatePost = async (userId: number, authToken: string, post: Post) => {
     try {
       const checkPermissions = await this.compareAuthToken(userId, authToken);
       if (checkPermissions) {
@@ -77,9 +78,9 @@ export class PostService {
   };
 
   public deletePostById = async (
-    userId: string,
+    userId: number,
     authToken: string,
-    postId: string
+    postId: number
   ) => {
     try {
       const checkPermissions = await this.compareAuthToken(userId, authToken);

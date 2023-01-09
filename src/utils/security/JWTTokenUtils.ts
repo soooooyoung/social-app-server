@@ -1,7 +1,7 @@
 import * as jwt from "jsonwebtoken";
 import { logError } from "../../utils/Logger";
 import { env } from "../../configs/env";
-import { User } from "../../models/";
+import { JWTPayload, User } from "../../models/";
 import {
   IllegalStateException,
   InvalidKeyException,
@@ -20,13 +20,11 @@ export class TokenUtils {
       if (!secret) {
         throw new NoResultException();
       }
-      if (expiresIn) {
-        return jwt.sign(payload, secret, { expiresIn: expiresIn });
-      }
+      if (expiresIn) return jwt.sign(payload, secret, { expiresIn });
       return jwt.sign(payload, secret);
     } catch (e) {
       logError(e);
-      throw new IllegalStateException("Unable to generate Token");
+      throw new IllegalStateException("Unable to generate Token: " + e);
     }
   };
 
@@ -35,7 +33,7 @@ export class TokenUtils {
       logError("NO USER IN GENERATE AUTH TOKEN");
       throw new NoResultException();
     }
-    return this.doGenerateToken(user.userId, this.accessTokenSecret, expiresIn);
+    return this.doGenerateToken({ user }, this.accessTokenSecret, expiresIn);
   };
 
   public generateToken = (
@@ -49,9 +47,12 @@ export class TokenUtils {
     return this.doGenerateToken(payload, this.accessTokenSecret, expiresIn);
   };
 
-  public verifyToken = async (token: string) => {
+  /**
+   * Define preassigned (upon key generation) payload data type for relevant data handling
+   */
+  public verifyToken = async <T extends JWTPayload>(token: string) => {
     try {
-      return jwt.verify(token, this.accessTokenSecret) as string;
+      return jwt.verify(token, this.accessTokenSecret) as T;
     } catch (e) {
       logError(e);
       throw new InvalidKeyException("Invalid Token");

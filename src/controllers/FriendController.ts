@@ -33,7 +33,7 @@ export class FriendController extends BaseController {
   @Get("/:userId")
   public async getUserFriendById(
     @Res() res: Response,
-    @Param("userId") userId: string,
+    @Param("userId") userId: number,
     @HeaderParams() header: BaseHeaderParam,
     @CookieParam("token") authToken: string
   ) {
@@ -46,7 +46,6 @@ export class FriendController extends BaseController {
         );
         if (userPermission) {
           const response = await this.friendService.findAllFriendsById(userId);
-          console.log("freinds", response);
           return res.status(200).json(response);
         }
       }

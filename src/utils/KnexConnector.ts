@@ -22,4 +22,4 @@ export const initPool = () => {
   }
 };
 
-export const qb = (tableName: string) => pool(tableName);
+export const qb = (tableName: Knex.TableDescriptor) => pool(tableName);

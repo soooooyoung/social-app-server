@@ -32,7 +32,7 @@ export class PostController extends BaseController {
   @Get("/:userId")
   public async getPosts(
     @Res() res: Response,
-    @Param("userId") userId: string,
+    @Param("userId") userId: number,
     @HeaderParams() header: BaseHeaderParam,
     @CookieParam("token") authToken: string
   ) {
@@ -72,7 +72,7 @@ export class PostController extends BaseController {
   public async createPost(
     @Res() res: Response,
     @Body() data: PostData,
-    @Param("userId") userId: string,
+    @Param("userId") userId: number,
     @HeaderParams() header: BaseHeaderParam,
     @CookieParam("token") authToken: string
   ) {
@@ -106,7 +106,7 @@ export class PostController extends BaseController {
   public async updatePost(
     @Res() res: Response,
     @Body() data: PostData,
-    @Param("userId") userId: string,
+    @Param("userId") userId: number,
     @HeaderParams() header: BaseHeaderParam,
     @CookieParam("token") authToken: string
   ) {
@@ -144,8 +144,8 @@ export class PostController extends BaseController {
   @Delete("/:userId/:postId")
   public async deletePost(
     @Res() res: Response,
-    @Param("postId") postId: string,
-    @Param("userId") userId: string,
+    @Param("postId") postId: number,
+    @Param("userId") userId: number,
     @HeaderParams() header: BaseHeaderParam,
     @CookieParam("token") authToken: string
   ) {

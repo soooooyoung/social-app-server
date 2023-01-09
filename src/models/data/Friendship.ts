@@ -1,5 +1,5 @@
 export interface Friendship {
-  requesterId: string;
-  addresseeId: string;
+  requesterId: number;
+  addresseeId: number;
   statusCode: "A" | "B" | "D" | "R";
 }

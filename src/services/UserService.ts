@@ -49,9 +49,9 @@ export class UserService {
     }
   };
   public checkSignupToken = async (token: string) => {
-    const payload = await this.tokenUtil.verifyToken(token);
+    const payload = await this.tokenUtil.verifyToken<EmailJWT>(token);
     if (payload && typeof payload === "object") {
-      return payload as EmailJWT;
+      return payload;
     }
     return false;
   };
