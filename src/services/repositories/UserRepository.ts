@@ -1,6 +1,6 @@
-import { qb } from "utils/KnexConnector";
-import { clearPrivateData } from "utils/security/dataUtils";
-import { User } from "../../models";
+import { qb } from "../../utils/KnexConnector";
+import { clearPrivateData } from "../../utils/security/dataUtils";
+import { User, UserQueryParams } from "../../models";
 import { DokiRepository } from "./DokiRepository";
 
 export class UserRepository extends DokiRepository<User> {
@@ -14,7 +14,7 @@ export class UserRepository extends DokiRepository<User> {
     );
   }
 
-  async findProfiles(params: Partial<User>) {
+  async findProfiles(params: UserQueryParams) {
     return clearPrivateData(
       await qb(this.tableName)
         .where(params)

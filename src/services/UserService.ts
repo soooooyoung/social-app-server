@@ -58,6 +58,7 @@ export class UserService {
   };
 
   public fetchUsers = async (params: UserQueryParams) => {
-    const results = this.userRepository.findProfiles();
+    const results = this.userRepository.findProfiles(params);
+    return results;
   };
 }
