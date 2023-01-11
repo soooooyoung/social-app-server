@@ -87,4 +87,5 @@ export class FriendController extends BaseController {
         error: e,
       });
     }
+  }
 }
