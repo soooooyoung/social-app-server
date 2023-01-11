@@ -21,4 +21,7 @@ export class UserRepository extends DokiRepository<User> {
         .select(["nickname, userId, username, email, profileImgUrl"])
     );
   }
+  async update(userId: number, item: User): Promise<boolean> {
+    return await qb(this.tableName).where({ userId }).update(item);
+  }
 }

@@ -1,9 +1,10 @@
 import { Service } from "typedi";
 import { TokenUtils } from "../utils/security/JWTTokenUtils";
 import { encode } from "../utils/security/PasswordEncoder";
-import { User, EmailJWT, UserQueryParams } from "../models";
+import { User, EmailJWT, UserQueryParams, AuthTokenJWT } from "../models";
 import { UserRepository } from "./repositories/UserRepository";
 import { logError, logInfo } from "../utils/Logger";
+import { IllegalStateException } from "models/exceptions";
 
 @Service()
 export class UserService {
@@ -12,6 +13,15 @@ export class UserService {
 
   private generateToken = (user: User) => {
     return this.tokenUtil.generateAuthToken(user);
+  };
+
+  private checkPermissions = async (userId: number, authToken: string) => {
+    const authData = await this.tokenUtil.verifyToken<AuthTokenJWT>(authToken);
+
+    if (authData.user.userId === userId) {
+      return true;
+    }
+    return false;
   };
 
   public checkIsSafe = async ({ email, username }: User) => {
@@ -23,6 +33,23 @@ export class UserService {
       return false;
     }
     return true;
+  };
+
+  public editUser = async (user: User, authToken: string) => {
+    try {
+      if (!user.userId) {
+        throw new IllegalStateException("UserId Required");
+      }
+      const isValidRequest = await this.checkPermissions(
+        user.userId,
+        authToken
+      );
+      if (isValidRequest) {
+        return await this.userRepository.update(user.userId, user);
+      }
+    } catch (e) {
+      logError("Edit user failed", e);
+    }
   };
 
   public signUpUser = async (user: User) => {
