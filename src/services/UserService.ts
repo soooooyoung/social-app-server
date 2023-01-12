@@ -4,7 +4,7 @@ import { encode } from "../utils/security/PasswordEncoder";
 import { User, EmailJWT, UserQueryParams, AuthTokenJWT } from "../models";
 import { UserRepository } from "./repositories/UserRepository";
 import { logError, logInfo } from "../utils/Logger";
-import { IllegalStateException } from "models/exceptions";
+import { IllegalStateException } from "../models/exceptions";
 
 @Service()
 export class UserService {
@@ -33,6 +33,22 @@ export class UserService {
       return false;
     }
     return true;
+  };
+
+  public getUser = async (userId: number, authToken: string) => {
+    try {
+      if (!userId) {
+        throw new IllegalStateException("UserId Required");
+      }
+      console.log(1);
+      const isValidRequest = await this.checkPermissions(userId, authToken);
+      if (isValidRequest) {
+        console.log(2);
+        return await this.userRepository.findById({ userId });
+      }
+    } catch (e) {
+      logError("Get user failed", e);
+    }
   };
 
   public editUser = async (user: User, authToken: string) => {

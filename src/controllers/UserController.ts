@@ -11,6 +11,7 @@ import {
   Post,
   Param,
   Body,
+  Patch,
 } from "routing-controllers";
 import { BaseController } from "./BaseController";
 import { BaseHeaderParam, User, UserQueryParams } from "../models";
@@ -40,8 +41,8 @@ export class FriendController extends BaseController {
       const auth = await this.checkAuth((key) => header[key]);
 
       if (auth && authToken) {
-        const response = this.userService.fetchUsers(queryParams);
-        return res.status(401).json(response);
+        const response = await this.userService.fetchUsers(queryParams);
+        return res.status(200).json(response);
       }
 
       return res.status(401).json({
@@ -58,7 +59,36 @@ export class FriendController extends BaseController {
   }
 
   @HttpCode(200)
-  @Post("/:userId")
+  @Get("/:userId")
+  public async getUserById(
+    @Res() res: Response,
+    @Param("userId") userId: number,
+    @HeaderParams() header: BaseHeaderParam,
+    @CookieParam("token") authToken: string
+  ) {
+    try {
+      const auth = await this.checkAuth((key) => header[key]);
+
+      if (auth && authToken) {
+        const response = await this.userService.getUser(userId, authToken);
+        return res.status(200).json(response);
+      }
+
+      return res.status(401).json({
+        success: false,
+        error: "Unauthorized",
+      });
+    } catch (e) {
+      logError(e);
+      return res.status(400).json({
+        success: false,
+        error: e,
+      });
+    }
+  }
+
+  @HttpCode(200)
+  @Patch("/:userId")
   public async editUser(
     @Res() res: Response,
     @Param("userId") userId: number,
