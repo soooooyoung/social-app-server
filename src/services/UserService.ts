@@ -40,10 +40,9 @@ export class UserService {
       if (!userId) {
         throw new IllegalStateException("UserId Required");
       }
-      console.log(1);
+
       const isValidRequest = await this.checkPermissions(userId, authToken);
       if (isValidRequest) {
-        console.log(2);
         return await this.userRepository.findById({ userId });
       }
     } catch (e) {
