@@ -27,4 +27,8 @@ export const env = {
     EMAIL_AUTH_PASS: process.env.EMAIL_AUTH_PASS,
   },
   client: process.env.CLIENT,
+  path: {
+    userImg: process.env.IMG_PATH_USER,
+    postImg: process.env.IMG_PATH_POST,
+  },
 };

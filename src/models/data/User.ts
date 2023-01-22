@@ -7,4 +7,5 @@ export interface User {
   created_date?: string;
   nickname?: string;
   email?: string;
+  profileImgUrl?: string | null;
 }

@@ -11,3 +11,10 @@ export interface EmailJWT extends JWTPayload {
 export interface AuthTokenJWT extends JWTPayload {
   user: User;
 }
+
+export interface FileTokenJWT extends JWTPayload {
+  file: {
+    filePath: string;
+    fileId: number;
+  };
+}

@@ -30,7 +30,12 @@ export abstract class DokiRepository<T> implements BaseRepository<T> {
     return await qb(this.tableName)
       .where(id)
       .first()
-      .then((data) => JSON.parse(JSON.stringify(data)));
+      .then((data) => {
+        if (data) {
+          JSON.parse(JSON.stringify(data));
+        }
+        return data;
+      });
   }
 
   async save(item: T): Promise<any> {
