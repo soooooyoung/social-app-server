@@ -59,6 +59,7 @@ export class FileService {
 
   public deleteFileFromUser = async (userId: number) => {
     try {
+      await this.fileRepository.delete({ userId });
       await this.userRepository.update(userId, {
         profileImgUrl: null,
       });
