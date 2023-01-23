@@ -12,6 +12,7 @@ import {
   Param,
   Body,
   Patch,
+  QueryParam,
 } from "routing-controllers";
 import { BaseController } from "./BaseController";
 import { BaseHeaderParam, User, UserQueryParams } from "../models";
@@ -32,8 +33,8 @@ export class FriendController extends BaseController {
   @Get("")
   public async getUsers(
     @Res() res: Response,
-    @QueryParams()
-    queryParams: UserQueryParams,
+    @QueryParam("keyword")
+    keyword: string,
     @HeaderParams() header: BaseHeaderParam,
     @CookieParam("token") authToken: string
   ) {
@@ -41,7 +42,7 @@ export class FriendController extends BaseController {
       const auth = await this.checkAuth((key) => header[key]);
 
       if (auth && authToken) {
-        const response = await this.userService.fetchUsers(queryParams);
+        const response = await this.userService.fetchUsers(authToken, keyword);
         return res.status(200).json(response);
       }
 

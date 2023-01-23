@@ -15,6 +15,13 @@ export class UserService {
     return this.tokenUtil.generateAuthToken(user);
   };
 
+  private getUserId = async (authToken: string) => {
+    const authData = await this.tokenUtil.verifyToken<AuthTokenJWT>(authToken);
+    if (authData && authData.user) {
+      return authData.user.userId;
+    }
+  };
+
   private checkPermissions = async (userId: number, authToken: string) => {
     const authData = await this.tokenUtil.verifyToken<AuthTokenJWT>(authToken);
 
@@ -99,8 +106,17 @@ export class UserService {
     return false;
   };
 
-  public fetchUsers = async (params: UserQueryParams) => {
-    const results = this.userRepository.findProfiles(params);
-    return results;
+  /**
+   *
+   * @param authToken authentication jwt
+   * @param keyword partial nickname or username
+   * @returns array of users excluding searcher
+   */
+  public fetchUsers = async (authToken: string, keyword: string) => {
+    const userId = await this.getUserId(authToken);
+    if (userId) {
+      const results = this.userRepository.findUsersByKeyword(userId, keyword);
+      return results;
+    }
   };
 }

@@ -13,14 +13,15 @@ export class UserRepository extends DokiRepository<User> {
       await qb(this.tableName).whereIn(key, array).select(select)
     );
   }
-
-  async findProfiles(params: UserQueryParams) {
-    return clearPrivateData(
-      await qb(this.tableName)
-        .where(params)
-        .select(["nickname, userId, username, email, profileImgUrl"])
-    );
+  async findUsersByKeyword(userId: number, keyword: string) {
+    const search = `%${keyword}%`;
+    return await qb(this.tableName)
+      .where({ statusCode: "A" })
+      .andWhereNot({ userId })
+      .andWhereILike("username", search)
+      .orWhereILike("nickname", keyword);
   }
+
   async update(userId: number, item: User): Promise<boolean> {
     return await qb(this.tableName).where({ userId }).update(item);
   }
