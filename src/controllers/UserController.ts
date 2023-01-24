@@ -33,7 +33,7 @@ export class FriendController extends BaseController {
   @Get("")
   public async getUsers(
     @Res() res: Response,
-    @QueryParam("keyword")
+    @QueryParam("q")
     keyword: string,
     @HeaderParams() header: BaseHeaderParam,
     @CookieParam("token") authToken: string

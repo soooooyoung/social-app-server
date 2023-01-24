@@ -45,6 +45,7 @@ export class FriendshipParam {
   public requesterId?: number;
   @IsNotEmpty()
   public addresseeId?: number;
+  public statusCode?: "A" | "B" | "D" | "R";
 }
 
 export class UserQueryParams {

@@ -35,7 +35,7 @@ export class FriendService {
         addresseeId,
         statusCode: "R",
       };
-      const response = await this.friendRepository.save(newFriendship);
+      const response = await this.friendRepository.saveOrUpdate(newFriendship);
       return response;
     } catch (e) {
       logError("Duplicate friend request", e);
@@ -59,6 +59,28 @@ export class FriendService {
     }
   };
 
+  public updateFriendRequest = async (
+    requesterId: number,
+    addresseeId: number,
+    statusCode: "A" | "B" | "D" | "R"
+  ) => {
+    try {
+      const newFriendship: Friendship = {
+        requesterId,
+        addresseeId,
+        statusCode,
+      };
+      const response = await this.friendRepository.update(
+        requesterId,
+        addresseeId,
+        newFriendship
+      );
+      return response;
+    } catch (e) {
+      logError("FRIENDSHIP UPDATE FAILED", e);
+      throw e;
+    }
+  };
   public acceptFriendRequest = async (
     requesterId: number,
     addresseeId: number
@@ -81,15 +103,9 @@ export class FriendService {
     }
   };
 
-  public denyFriendRequest = async (
-    requesterId: number,
-    addresseeId: number
-  ) => {
+  public deleteFriendship = async (userId: number, friendId: number) => {
     try {
-      const response = await this.friendRepository.delete(
-        requesterId,
-        addresseeId
-      );
+      const response = await this.friendRepository.delete(userId, friendId);
       return response;
     } catch (e) {
       logError("FRIENDSHIP DELETE FAILED", e);
@@ -99,10 +115,8 @@ export class FriendService {
 
   public findAllFriendsById = async (userId: number) => {
     try {
-      const response: Friendship[] = await this.friendRepository.unionAll(
-        userId,
-        "A"
-      );
+      const response: Friendship[] =
+        await this.friendRepository.unionAllFriends(userId, "A");
 
       if (response.length > 0) {
         const userIds = response.reduce((prev, friendship) => {
@@ -117,6 +131,34 @@ export class FriendService {
           return prev;
         }, [] as number[]);
 
+        const friends = await this.userRepository.findUsers("userId", userIds, [
+          "username",
+          "userId",
+          "profileImgUrl",
+          "nickname",
+        ]);
+        return friends;
+      }
+      return [];
+    } catch (e) {
+      logError("FRIENDSHIP FINDALL FAILED", e);
+      throw e;
+    }
+  };
+  public findAllRequestsById = async (userId: number) => {
+    try {
+      const response: Friendship[] = await this.friendRepository.unionAll(
+        userId
+      );
+      if (response.length > 0) {
+        const userIds = response.reduce((prev, friendship) => {
+          if (friendship.addresseeId === userId) {
+            prev.push(friendship.requesterId);
+          } else {
+            prev.push(friendship.addresseeId);
+          }
+          return prev;
+        }, [] as number[]);
         const friends = await this.userRepository.findUsers("userId", userIds, [
           "username",
           "userId",

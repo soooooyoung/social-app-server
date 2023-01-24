@@ -62,7 +62,42 @@ export class FriendController extends BaseController {
       });
     }
   }
+  /**
+   * Get
+   */
+  @HttpCode(200)
+  @Get("/all/:userId")
+  public async getUserFriendshipsById(
+    @Res() res: Response,
+    @Param("userId") userId: number,
+    @HeaderParams() header: BaseHeaderParam,
+    @CookieParam("token") authToken: string
+  ) {
+    try {
+      const auth = await this.checkAuth((key) => header[key]);
+      if (auth) {
+        const userPermission = await this.friendService.checkUserPermission(
+          userId,
+          authToken
+        );
+        if (userPermission) {
+          const response = await this.friendService.findAllRequestsById(userId);
+          return res.status(200).json(response);
+        }
+      }
 
+      return res.status(401).json({
+        success: false,
+        error: "Unauthorized",
+      });
+    } catch (e) {
+      logError(e);
+      return res.status(400).json({
+        success: false,
+        error: e,
+      });
+    }
+  }
   /**
    * Create Friendship Request
    */
@@ -110,25 +145,26 @@ export class FriendController extends BaseController {
    */
   @HttpCode(200)
   @Patch("")
-  public async acceptFriendship(
+  public async updateFriendship(
     @Res() res: Response,
     @Body()
-    { requesterId, addresseeId }: FriendshipParam,
+    { requesterId, addresseeId, statusCode }: FriendshipParam,
     @HeaderParams() header: BaseHeaderParam,
     @CookieParam("token") authToken: string
   ) {
     try {
       const auth = await this.checkAuth((key) => header[key]);
 
-      if (auth && requesterId && addresseeId) {
+      if (auth && requesterId && addresseeId && statusCode) {
         const userPermission = await this.friendService.checkUserPermission(
           addresseeId,
           authToken
         );
         if (userPermission) {
-          const response = await this.friendService.acceptFriendRequest(
+          const response = await this.friendService.updateFriendRequest(
             requesterId,
-            addresseeId
+            addresseeId,
+            statusCode
           );
           return res.status(200).json({
             success: true,
@@ -153,30 +189,27 @@ export class FriendController extends BaseController {
    * Delete
    */
   @HttpCode(200)
-  @Delete("")
-  public async deletePost(
+  @Delete("/:userId/:friendId")
+  public async deleteFriendship(
     @Res() res: Response,
-    @Body()
-    { requesterId, addresseeId }: FriendshipParam,
+    @Param("userId") userId: number,
+    @Param("friendId") friendId: number,
     @HeaderParams() header: BaseHeaderParam,
     @CookieParam("token") authToken: string
   ) {
     try {
       const auth = await this.checkAuth((key) => header[key]);
 
-      if (auth && requesterId && addresseeId) {
+      if (auth && userId && friendId) {
         const userPermission = await this.friendService.checkUserPermission(
-          addresseeId,
+          userId,
           authToken
         );
-        const altPermission = await this.friendService.checkUserPermission(
-          requesterId,
-          authToken
-        );
-        if (userPermission || altPermission) {
-          const response = await this.friendService.denyFriendRequest(
-            requesterId,
-            addresseeId
+
+        if (userPermission) {
+          const response = await this.friendService.deleteFriendship(
+            userId,
+            friendId
           );
           return res.status(200).json({
             success: true,

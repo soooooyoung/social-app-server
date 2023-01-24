@@ -13,13 +13,26 @@ export class UserRepository extends DokiRepository<User> {
       await qb(this.tableName).whereIn(key, array).select(select)
     );
   }
+
   async findUsersByKeyword(userId: number, keyword: string) {
     const search = `%${keyword}%`;
     return await qb(this.tableName)
-      .where({ statusCode: "A" })
-      .andWhereNot({ userId })
+      .whereNot({ userId })
       .andWhereILike("username", search)
-      .orWhereILike("nickname", keyword);
+      .orWhereILike("nickname", keyword)
+      .leftJoin("friendship", function () {
+        this.on(function () {
+          this.on("users.userId", "=", "friendship.requesterId").onIn(
+            "friendship.addresseeId",
+            [userId]
+          );
+        }).orOn(function () {
+          this.on("users.userId", "=", "friendship.addresseeId").onIn(
+            "friendship.requesterId",
+            [userId]
+          );
+        });
+      });
   }
 
   async update(userId: number, item: User): Promise<boolean> {

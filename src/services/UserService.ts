@@ -1,10 +1,11 @@
 import { Service } from "typedi";
 import { TokenUtils } from "../utils/security/JWTTokenUtils";
 import { encode } from "../utils/security/PasswordEncoder";
-import { User, EmailJWT, UserQueryParams, AuthTokenJWT } from "../models";
+import { User, EmailJWT, AuthTokenJWT } from "../models";
 import { UserRepository } from "./repositories/UserRepository";
 import { logError, logInfo } from "../utils/Logger";
 import { IllegalStateException } from "../models/exceptions";
+import { clearPrivateData } from "../utils/security/dataUtils";
 
 @Service()
 export class UserService {
@@ -113,10 +114,18 @@ export class UserService {
    * @returns array of users excluding searcher
    */
   public fetchUsers = async (authToken: string, keyword: string) => {
-    const userId = await this.getUserId(authToken);
-    if (userId) {
-      const results = this.userRepository.findUsersByKeyword(userId, keyword);
-      return results;
+    try {
+      const userId = await this.getUserId(authToken);
+      if (userId) {
+        const results = (await this.userRepository.findUsersByKeyword(
+          userId,
+          keyword
+        )) as User[];
+        if (results) return results.map((user) => clearPrivateData(user));
+      }
+    } catch (e) {
+      logError(e);
+      return false;
     }
   };
 }

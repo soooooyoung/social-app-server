@@ -7,6 +7,15 @@ export class FriendshipRepository extends DokiRepository<Friendship> {
     super("friendship");
   }
 
+  async saveOrUpdate(item: Friendship): Promise<any> {
+    const [output] = await qb(this.tableName)
+      .insert<Friendship>(item)
+      .onConflict(["requesterId", "addresseeId"])
+      .merge()
+      .returning("*");
+
+    return output;
+  }
   async update(
     requesterId: number,
     addresseeId: number,
@@ -17,13 +26,27 @@ export class FriendshipRepository extends DokiRepository<Friendship> {
       .update(item);
   }
 
-  async delete(requesterId: number, addresseeId: number): Promise<number> {
+  async delete(userId: number, friendId: number): Promise<number> {
     return await qb(this.tableName)
-      .whereIn(["requesterId", "addresseeId"], [[requesterId, addresseeId]])
+      .whereIn(
+        ["requesterId", "addresseeId"],
+        [
+          [userId, friendId],
+          [friendId, userId],
+        ]
+      )
       .del();
   }
 
-  async unionAll(userId: number, statusCode: Friendship["statusCode"]) {
+  async unionAll(userId: number) {
+    return await qb(this.tableName)
+      .select("*")
+      .where({ addresseeId: userId })
+      .unionAll([
+        qb(this.tableName).select("*").where({ requesterId: userId }),
+      ]);
+  }
+  async unionAllFriends(userId: number, statusCode: Friendship["statusCode"]) {
     return await qb(this.tableName)
       .select("*")
       .where({ addresseeId: userId, statusCode })
