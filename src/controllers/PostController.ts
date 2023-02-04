@@ -123,10 +123,9 @@ export class PostController extends BaseController {
           return res.status(200).json("Updated Successfully");
         }
       }
-
-      return res.status(200).json({
-        success: true,
-        error: null,
+      return res.status(401).json({
+        success: false,
+        error: "Unauthorized",
       });
     } catch (e) {
       logError(e);

@@ -7,6 +7,17 @@ export class FriendshipRepository extends DokiRepository<Friendship> {
     super("friendship");
   }
 
+  async findFriendShip(
+    userId: number,
+    friendId: number,
+    statusCode: Friendship["statusCode"]
+  ) {
+    return await qb(this.tableName)
+      .where({ requesterId: userId, addresseeId: friendId, statusCode })
+      .orWhere({ requesterId: friendId, addresseeId: userId, statusCode })
+      .select("*");
+  }
+
   async saveOrUpdate(item: Friendship): Promise<any> {
     const [output] = await qb(this.tableName)
       .insert<Friendship>(item)

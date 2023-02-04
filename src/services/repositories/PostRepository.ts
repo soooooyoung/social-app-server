@@ -18,4 +18,24 @@ export class PostRepository extends DokiRepository<Post> {
       .whereIn(["userId", "postId"], [[userId, postId]])
       .update(item);
   }
+
+  async unionAll(
+    item: Partial<Post>,
+    alternative: Partial<Post>,
+    sortBy?: keyof Post,
+    direction?: "desc" | "asc"
+  ) {
+    if (sortBy) {
+      return await qb(this.tableName)
+        .where(item)
+        .select("*")
+        .unionAll([qb(this.tableName).select("*").where(alternative)])
+        .orderBy(sortBy, direction ?? "desc");
+    }
+
+    return await qb(this.tableName)
+      .where(item)
+      .select("*")
+      .unionAll([qb(this.tableName).select("*").where(alternative)]);
+  }
 }

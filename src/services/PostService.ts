@@ -5,16 +5,17 @@ import { PostRepository } from "./repositories/PostRepository";
 import { Post, User } from "../models";
 import { logError } from "../utils/Logger";
 import { AuthTokenJWT } from "../models/";
+import { FriendshipRepository } from "./repositories/FriendshipRepository";
 
 @Service()
 export class PostService {
   private posts: PostRepository = new PostRepository();
+  private friends: FriendshipRepository = new FriendshipRepository();
   private tokenUtils: TokenUtils = new TokenUtils();
 
-  private compareAuthToken = async (userId: number, authToken: string) => {
+  private compareAuthToken = async (userId: number, authToken?: number) => {
     try {
-      const token = await this.tokenUtils.verifyToken<AuthTokenJWT>(authToken);
-      if (token.user.userId === userId) {
+      if (authToken === userId) {
         return true;
       }
       return false;
@@ -26,8 +27,12 @@ export class PostService {
 
   public findAllPostsById = async (userId: number, authToken: string) => {
     try {
-      const checkPermissions = await this.compareAuthToken(userId, authToken);
-      if (checkPermissions) {
+      const token = await this.tokenUtils.verifyToken<AuthTokenJWT>(authToken);
+      const checkOwnership = await this.compareAuthToken(
+        userId,
+        token.user.userId
+      );
+      if (checkOwnership) {
         const result = await this.posts.findAll(
           { userId },
           "created_date",
@@ -35,8 +40,28 @@ export class PostService {
         );
 
         return result;
+      } else if (token && token?.user?.userId) {
+        const checkFriendship = await this.friends.findFriendShip(
+          userId,
+          token.user.userId,
+          "A"
+        );
+        if (checkFriendship && checkFriendship.length > 0) {
+          const result = await this.posts.unionAll(
+            { userId, statusCode: "F" },
+            { userId, statusCode: "G" },
+            "created_date",
+            "desc"
+          );
+          return result;
+        }
       }
-      return false;
+      const result = await this.posts.findAll(
+        { userId, statusCode: "G" },
+        "created_date",
+        "desc"
+      );
+      return result;
     } catch (e) {
       logError(e);
       throw e;
@@ -45,8 +70,12 @@ export class PostService {
 
   public savePost = async (userId: number, authToken: string, post: Post) => {
     try {
-      const checkPermissions = await this.compareAuthToken(userId, authToken);
-      if (checkPermissions) {
+      const token = await this.tokenUtils.verifyToken<AuthTokenJWT>(authToken);
+      const checkOwnership = await this.compareAuthToken(
+        userId,
+        token.user.userId
+      );
+      if (checkOwnership) {
         const result = await this.posts.save({
           ...post,
           userId,
@@ -62,8 +91,12 @@ export class PostService {
 
   public updatePost = async (userId: number, authToken: string, post: Post) => {
     try {
-      const checkPermissions = await this.compareAuthToken(userId, authToken);
-      if (checkPermissions) {
+      const token = await this.tokenUtils.verifyToken<AuthTokenJWT>(authToken);
+      const checkOwnership = await this.compareAuthToken(
+        userId,
+        token.user.userId
+      );
+      if (checkOwnership) {
         const result = await this.posts.update(userId, post.postId, {
           ...post,
           userId,
@@ -83,8 +116,12 @@ export class PostService {
     postId: number
   ) => {
     try {
-      const checkPermissions = await this.compareAuthToken(userId, authToken);
-      if (checkPermissions) {
+      const token = await this.tokenUtils.verifyToken<AuthTokenJWT>(authToken);
+      const checkOwnership = await this.compareAuthToken(
+        userId,
+        token.user.userId
+      );
+      if (checkOwnership) {
         const result = await this.posts.delete(userId, postId);
 
         return result;
