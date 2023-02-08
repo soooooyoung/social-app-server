@@ -37,7 +37,6 @@ export class PostController extends BaseController {
     @CookieParam("token") authToken: string
   ) {
     try {
-      let response: PostData[] = [];
       const auth = await this.checkAuth((key) => header[key]);
 
       if (auth && userId && authToken) {
@@ -46,8 +45,7 @@ export class PostController extends BaseController {
           authToken
         );
         if (result) {
-          response = result;
-          return res.status(200).json(response);
+          return res.status(200).json(result);
         }
       }
 

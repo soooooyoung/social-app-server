@@ -2,6 +2,7 @@ export type { User } from "./data/User";
 export type { Post } from "./data/Post";
 export type { Friendship } from "./data/Friendship";
 export type { Comment } from "./data/Comment";
+export type { Like } from "./data/Like";
 export type { Auth } from "./data/Auth";
 export type { DokiResponse } from "./request/response";
 export type { DokiFile } from "./data/DokiFile";

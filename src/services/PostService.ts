@@ -2,10 +2,11 @@ import { Service } from "typedi";
 import { IllegalStateException } from "../models/exceptions";
 import { TokenUtils } from "../utils/security/JWTTokenUtils";
 import { PostRepository } from "./repositories/PostRepository";
-import { Post, User } from "../models";
+import { Post } from "../models";
 import { logError } from "../utils/Logger";
 import { AuthTokenJWT } from "../models/";
 import { FriendshipRepository } from "./repositories/FriendshipRepository";
+import { LikeRepository } from "./repositories/LikeRepository";
 
 @Service()
 export class PostService {
@@ -33,7 +34,7 @@ export class PostService {
         token.user.userId
       );
       if (checkOwnership) {
-        const result = await this.posts.findAll(
+        const result = await this.posts.findAllPosts(
           { userId },
           "created_date",
           "desc"
@@ -56,7 +57,7 @@ export class PostService {
           return result;
         }
       }
-      const result = await this.posts.findAll(
+      const result = await this.posts.findAllPosts(
         { userId, statusCode: "G" },
         "created_date",
         "desc"
