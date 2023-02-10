@@ -78,7 +78,8 @@ export class PostService {
       );
       if (checkOwnership) {
         const result = await this.posts.save({
-          ...post,
+          statusCode: post.statusCode,
+          content: post.content,
           userId,
         });
         return result;
@@ -97,9 +98,10 @@ export class PostService {
         userId,
         token.user.userId
       );
-      if (checkOwnership) {
+      if (checkOwnership && post.postId) {
         const result = await this.posts.update(userId, post.postId, {
-          ...post,
+          statusCode: post.statusCode,
+          content: post.content,
           userId,
         });
         return result;

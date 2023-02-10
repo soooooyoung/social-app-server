@@ -17,6 +17,7 @@ export class PostRepository extends DokiRepository<Post> {
   ];
 
   async delete(userId: number, postId: number): Promise<number> {
+    await qb("post_like").where({ postOwnerId: postId }).del();
     return await qb(this.tableName)
       .whereIn(["userId", "postId"], [[userId, postId]])
       .del();
