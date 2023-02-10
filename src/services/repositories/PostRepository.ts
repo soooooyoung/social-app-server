@@ -7,6 +7,15 @@ export class PostRepository extends DokiRepository<Post> {
     super("posts");
   }
 
+  private selectPost = [
+    "post.postId",
+    "post.userId",
+    "post.content",
+    "post.created_date",
+    "post.updated_date",
+    "post.statusCode",
+  ];
+
   async delete(userId: number, postId: number): Promise<number> {
     return await qb(this.tableName)
       .whereIn(["userId", "postId"], [[userId, postId]])
@@ -31,12 +40,12 @@ export class PostRepository extends DokiRepository<Post> {
         .orderBy(sortBy, direction ?? "desc")
         .leftJoin(
           qb("post_like")
-            .select("*", k().raw("count(*) as ??", ["likes"]))
-            .where({
-              postOwnerId: item.userId,
-            })
+            .select(
+              k().raw("postId as ??", ["post_like_postId"]),
+              k().raw("count(*) as ??", ["likes"])
+            )
             .as("x"),
-          "x.postId",
+          "x.post_like_postId",
           "posts.postId"
         );
     }
@@ -46,12 +55,12 @@ export class PostRepository extends DokiRepository<Post> {
       .count("likerId")
       .leftJoin(
         qb("post_like")
-          .select("*", k().raw("count(*) as ??", ["likes"]))
-          .where({
-            postOwnerId: item.userId,
-          })
+          .select(
+            k().raw("postId as ??", ["post_like_postId"]),
+            k().raw("count(*) as ??", ["likes"])
+          )
           .as("x"),
-        "x.postId",
+        "x.post_like_postId",
         "posts.postId"
       );
   }
@@ -70,12 +79,12 @@ export class PostRepository extends DokiRepository<Post> {
         .count("likerId")
         .leftJoin(
           qb("post_like")
-            .select("*", k().raw("count(*) as ??", ["likes"]))
-            .where({
-              postOwnerId: item.userId,
-            })
+            .select(
+              k().raw("postId as ??", ["post_like_postId"]),
+              k().raw("count(*) as ??", ["likes"])
+            )
             .as("x"),
-          "x.postId",
+          "x.post_like_postId",
           "posts.postId"
         )
         .orderBy(sortBy, direction ?? "desc");
@@ -88,12 +97,12 @@ export class PostRepository extends DokiRepository<Post> {
       .count("likerId")
       .leftJoin(
         qb("post_like")
-          .select("*", k().raw("count(*) as ??", ["likes"]))
-          .where({
-            postOwnerId: item.userId,
-          })
+          .select(
+            k().raw("postId as ??", ["post_like_postId"]),
+            k().raw("count(*) as ??", ["likes"])
+          )
           .as("x"),
-        "x.postId",
+        "x.post_like_postId",
         "posts.postId"
       );
   }
