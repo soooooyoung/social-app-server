@@ -1,6 +1,7 @@
 import { knex, Knex } from "knex";
 import { IllegalStateException } from "../models/exceptions";
 import { env } from "../configs/env";
+import { logger } from "./Logger";
 
 let pool: Knex;
 
@@ -16,10 +17,12 @@ export const initPool = () => {
         database: dataSource.DB_DATABASE,
       },
     });
-    console.debug("MySql Pool generated successfully: ", pool);
+    logger.info("MySql Pool generated successfully: ", pool);
   } catch (e) {
     throw new IllegalStateException("failed to initialized pool" + e);
   }
 };
+
+export const k = () => pool;
 
 export const qb = (tableName: Knex.TableDescriptor) => pool(tableName);

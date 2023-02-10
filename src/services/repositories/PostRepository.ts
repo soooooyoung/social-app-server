@@ -1,4 +1,4 @@
-import { qb } from "../../utils/KnexConnector";
+import { k, qb } from "../../utils/KnexConnector";
 import { Post, User } from "../../models";
 import { DokiRepository } from "./DokiRepository";
 
@@ -29,26 +29,31 @@ export class PostRepository extends DokiRepository<Post> {
         .where(item)
         .select()
         .orderBy(sortBy, direction ?? "desc")
-        .count("likerId")
-        .leftJoin("post_like", function () {
-          this.on("post_like.postId", "=", "posts.postId").andOn(
-            "post_like.postOwnerId",
-            "=",
-            "posts.userId"
-          );
-        });
+        .leftJoin(
+          qb("post_like")
+            .select("*", k().raw("count(*) as ??", ["likes"]))
+            .where({
+              postOwnerId: item.userId,
+            })
+            .as("x"),
+          "x.postId",
+          "posts.postId"
+        );
     }
     return await qb(this.tableName)
       .where(item)
       .select()
       .count("likerId")
-      .leftJoin("post_like", function () {
-        this.on("post_like.postId", "=", "posts.postId").andOn(
-          "post_like.postOwnerId",
-          "=",
-          "posts.userId"
-        );
-      });
+      .leftJoin(
+        qb("post_like")
+          .select("*", k().raw("count(*) as ??", ["likes"]))
+          .where({
+            postOwnerId: item.userId,
+          })
+          .as("x"),
+        "x.postId",
+        "posts.postId"
+      );
   }
 
   async unionAll(
@@ -63,13 +68,16 @@ export class PostRepository extends DokiRepository<Post> {
         .select("*")
         .unionAll([qb(this.tableName).select("*").where(alternative)])
         .count("likerId")
-        .leftJoin("post_like", function () {
-          this.on("post_like.postId", "=", "posts.postId").andOn(
-            "post_like.postOwnerId",
-            "=",
-            "posts.userId"
-          );
-        })
+        .leftJoin(
+          qb("post_like")
+            .select("*", k().raw("count(*) as ??", ["likes"]))
+            .where({
+              postOwnerId: item.userId,
+            })
+            .as("x"),
+          "x.postId",
+          "posts.postId"
+        )
         .orderBy(sortBy, direction ?? "desc");
     }
 
@@ -78,12 +86,15 @@ export class PostRepository extends DokiRepository<Post> {
       .select("*")
       .unionAll([qb(this.tableName).select("*").where(alternative)])
       .count("likerId")
-      .leftJoin("post_like", function () {
-        this.on("post_like.postId", "=", "posts.postId").andOn(
-          "post_like.postOwnerId",
-          "=",
-          "posts.userId"
-        );
-      });
+      .leftJoin(
+        qb("post_like")
+          .select("*", k().raw("count(*) as ??", ["likes"]))
+          .where({
+            postOwnerId: item.userId,
+          })
+          .as("x"),
+        "x.postId",
+        "posts.postId"
+      );
   }
 }

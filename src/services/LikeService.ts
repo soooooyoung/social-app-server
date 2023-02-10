@@ -5,7 +5,6 @@ import { LikeRepository } from "./repositories/LikeRepository";
 import { Like } from "../models";
 import { logError } from "../utils/Logger";
 import { AuthTokenJWT } from "../models/";
-import { FriendshipRepository } from "./repositories/FriendshipRepository";
 
 @Service()
 export class LikeService {
@@ -23,43 +22,6 @@ export class LikeService {
       throw new IllegalStateException("Unable to Compare Auth Token");
     }
   };
-
-  //   public findAllLikesById = async (userId: number, authToken: string) => {
-  //     try {
-  //       const token = await this.tokenUtils.verifyToken<AuthTokenJWT>(authToken);
-  //       const checkOwnership = await this.compareAuthToken(
-  //         userId,
-  //         token.user.userId
-  //       );
-  //       if (checkOwnership) {
-
-  //       } else if (token && token?.user?.userId) {
-  //         const checkFriendship = await this.friends.findFriendShip(
-  //           userId,
-  //           token.user.userId,
-  //           "A"
-  //         );
-  //         if (checkFriendship && checkFriendship.length > 0) {
-  //           const result = await this.likes.unionAll(
-  //             { userId, statusCode: "F" },
-  //             { userId, statusCode: "G" },
-  //             "created_date",
-  //             "desc"
-  //           );
-  //           return result;
-  //         }
-  //       }
-  //       const result = await this.likes.findAll(
-  //         { userId, statusCode: "G" },
-  //         "created_date",
-  //         "desc"
-  //       );
-  //       return result;
-  //     } catch (e) {
-  //       logError(e);
-  //       throw e;
-  //     }
-  //   };
 
   public saveLike = async (authToken: string, item: Like) => {
     try {
