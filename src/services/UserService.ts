@@ -49,10 +49,20 @@ export class UserService {
         throw new IllegalStateException("UserId Required");
       }
 
-      const isValidRequest = await this.checkPermissions(userId, authToken);
-      if (isValidRequest) {
-        return await this.userRepository.findById({ userId });
+      const isOwner = await this.checkPermissions(userId, authToken);
+      const userData = await this.userRepository.findById({ userId });
+      if (isOwner) {
+        return userData;
       }
+
+      return {
+        username: userData.username,
+        userId: userData.userId,
+        email: userData.email,
+        nickname: userData.nickname,
+        intro: userData.intro,
+        profileImgUrl: userData.profileImgUrl,
+      };
     } catch (e) {
       logError("Get user failed", e);
     }
@@ -63,11 +73,8 @@ export class UserService {
       if (!user.userId) {
         throw new IllegalStateException("UserId Required");
       }
-      const isValidRequest = await this.checkPermissions(
-        user.userId,
-        authToken
-      );
-      if (isValidRequest) {
+      const isOwner = await this.checkPermissions(user.userId, authToken);
+      if (isOwner) {
         return await this.userRepository.update(user.userId, user);
       }
     } catch (e) {

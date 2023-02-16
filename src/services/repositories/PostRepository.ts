@@ -17,7 +17,7 @@ export class PostRepository extends DokiRepository<Post> {
   ];
 
   async delete(userId: number, postId: number): Promise<number> {
-    await qb("post_like").where({ postOwnerId: postId }).del();
+    await qb("post_like").where({ postId }).del();
     return await qb(this.tableName)
       .whereIn(["userId", "postId"], [[userId, postId]])
       .del();
@@ -51,7 +51,6 @@ export class PostRepository extends DokiRepository<Post> {
     return await qb(this.tableName)
       .where(item)
       .select()
-      .count("likerId")
       .leftJoin(
         qb("post_like")
           .select(k().raw("postId as ??", ["post_like_postId"]), "likerId")
@@ -71,9 +70,7 @@ export class PostRepository extends DokiRepository<Post> {
     if (sortBy) {
       return await qb(this.tableName)
         .where(item)
-        .select("*")
-        .unionAll([qb(this.tableName).select("*").where(alternative)])
-        .count("likerId")
+        .select()
         .leftJoin(
           qb("post_like")
             .select(k().raw("postId as ??", ["post_like_postId"]), "likerId")
@@ -82,14 +79,28 @@ export class PostRepository extends DokiRepository<Post> {
           "x.post_like_postId",
           "posts.postId"
         )
+        .unionAll([
+          qb(this.tableName)
+            .select("*")
+            .where(alternative)
+            .leftJoin(
+              qb("post_like")
+                .select(
+                  k().raw("postId as ??", ["post_like_postId"]),
+                  "likerId"
+                )
+                .whereNotNull("postId")
+                .as("x"),
+              "x.post_like_postId",
+              "posts.postId"
+            ),
+        ])
         .orderBy(sortBy, direction ?? "desc");
     }
 
     return await qb(this.tableName)
       .where(item)
-      .select("*")
-      .unionAll([qb(this.tableName).select("*").where(alternative)])
-      .count("likerId")
+      .select()
       .leftJoin(
         qb("post_like")
           .select(k().raw("postId as ??", ["post_like_postId"]), "likerId")
@@ -97,6 +108,19 @@ export class PostRepository extends DokiRepository<Post> {
           .as("x"),
         "x.post_like_postId",
         "posts.postId"
-      );
+      )
+      .unionAll([
+        qb(this.tableName)
+          .select("*")
+          .where(alternative)
+          .leftJoin(
+            qb("post_like")
+              .select(k().raw("postId as ??", ["post_like_postId"]), "likerId")
+              .whereNotNull("postId")
+              .as("x"),
+            "x.post_like_postId",
+            "posts.postId"
+          ),
+      ]);
   }
 }

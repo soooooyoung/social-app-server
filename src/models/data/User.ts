@@ -8,4 +8,5 @@ export interface User {
   nickname?: string;
   email?: string;
   profileImgUrl?: string | null;
+  intro?: string;
 }
