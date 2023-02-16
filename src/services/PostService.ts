@@ -2,11 +2,9 @@ import { Service } from "typedi";
 import { IllegalStateException } from "../models/exceptions";
 import { TokenUtils } from "../utils/security/JWTTokenUtils";
 import { PostRepository } from "./repositories/PostRepository";
-import { Post } from "../models";
+import { Post, PostQueryResponse, AuthTokenJWT } from "../models";
 import { logError } from "../utils/Logger";
-import { AuthTokenJWT } from "../models/";
 import { FriendshipRepository } from "./repositories/FriendshipRepository";
-import { LikeRepository } from "./repositories/LikeRepository";
 
 @Service()
 export class PostService {
@@ -33,14 +31,14 @@ export class PostService {
         userId,
         token.user.userId
       );
+
+      let result: PostQueryResponse[] = [];
       if (checkOwnership) {
-        const result = await this.posts.findAllPosts(
+        result = await this.posts.findAllPosts(
           { userId },
           "created_date",
           "desc"
         );
-
-        return result;
       } else if (token && token?.user?.userId) {
         const checkFriendship = await this.friends.findFriendShip(
           userId,
@@ -48,21 +46,39 @@ export class PostService {
           "A"
         );
         if (checkFriendship && checkFriendship.length > 0) {
-          const result = await this.posts.unionAll(
+          result = await this.posts.unionAll(
             { userId, statusCode: "F" },
             { userId, statusCode: "G" },
             "created_date",
             "desc"
           );
-          return result;
         }
+      } else {
+        result = await this.posts.findAllPosts(
+          { userId, statusCode: "G" },
+          "created_date",
+          "desc"
+        );
       }
-      const result = await this.posts.findAllPosts(
-        { userId, statusCode: "G" },
-        "created_date",
-        "desc"
-      );
-      return result;
+
+      return result.reduce((prev, curr, idx) => {
+        const found = prev.find((data) => data.postId === curr.postId);
+        if (found && curr.likerId) {
+          prev[prev.indexOf(found)].likedIds?.push(curr.likerId);
+          return prev;
+        }
+        const newPost: Post = {
+          postId: curr.postId,
+          statusCode: curr.statusCode,
+          created_date: curr.created_date,
+          updated_date: curr.updated_date,
+          content: curr.content,
+          userId: curr.userId,
+          likedIds: curr.likerId ? [curr.likerId] : [],
+        };
+
+        return [...prev, newPost];
+      }, [] as Post[]);
     } catch (e) {
       logError(e);
       throw e;

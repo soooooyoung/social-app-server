@@ -5,4 +5,7 @@ export interface Post {
   updated_date?: string;
   content?: string;
   statusCode?: "P" | "G" | "B" | "F";
+
+  // merged
+  likedIds?: number[];
 }

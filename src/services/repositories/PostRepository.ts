@@ -41,14 +41,24 @@ export class PostRepository extends DokiRepository<Post> {
         .orderBy(sortBy, direction ?? "desc")
         .leftJoin(
           qb("post_like")
-            .select(
-              k().raw("postId as ??", ["post_like_postId"]),
-              k().raw("count(*) as ??", ["likes"])
-            )
+            .select(k().raw("postId as ??", ["post_like_postId"]), "likerId")
+            .whereNotNull("postId")
             .as("x"),
-          "x.post_like_postId",
-          "posts.postId"
+          "posts.postId",
+          "x.post_like_postId"
         );
+
+      // .groupBy("posts.postId");
+      // .leftJoin(
+      //   qb("post_like")
+      //     .select(
+      //       k().raw("postId as ??", ["post_like_postId"]),
+      //       k().raw("count(*) as ??", ["likes"])
+      //     )
+      //     .as("x"),
+      //   "x.post_like_postId",
+      //   "posts.postId"
+      // );
     }
     return await qb(this.tableName)
       .where(item)
