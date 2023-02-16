@@ -25,6 +25,9 @@ export class LikeService {
 
   public saveLike = async (authToken: string, item: Like) => {
     try {
+      if (!item.likerId) {
+        throw new IllegalStateException("liker Id is required");
+      }
       const token = await this.tokenUtils.verifyToken<AuthTokenJWT>(authToken);
       const checkOwnership = await this.compareAuthToken(
         item.likerId,
@@ -42,6 +45,9 @@ export class LikeService {
 
   public deleteLike = async (authToken: string, item: Like) => {
     try {
+      if (!item.likerId) {
+        throw new IllegalStateException("liker Id is required");
+      }
       const token = await this.tokenUtils.verifyToken<AuthTokenJWT>(authToken);
       const checkOwnership = await this.compareAuthToken(
         item.likerId,
