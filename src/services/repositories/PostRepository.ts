@@ -47,18 +47,6 @@ export class PostRepository extends DokiRepository<Post> {
           "posts.postId",
           "x.post_like_postId"
         );
-
-      // .groupBy("posts.postId");
-      // .leftJoin(
-      //   qb("post_like")
-      //     .select(
-      //       k().raw("postId as ??", ["post_like_postId"]),
-      //       k().raw("count(*) as ??", ["likes"])
-      //     )
-      //     .as("x"),
-      //   "x.post_like_postId",
-      //   "posts.postId"
-      // );
     }
     return await qb(this.tableName)
       .where(item)
@@ -66,10 +54,8 @@ export class PostRepository extends DokiRepository<Post> {
       .count("likerId")
       .leftJoin(
         qb("post_like")
-          .select(
-            k().raw("postId as ??", ["post_like_postId"]),
-            k().raw("count(*) as ??", ["likes"])
-          )
+          .select(k().raw("postId as ??", ["post_like_postId"]), "likerId")
+          .whereNotNull("postId")
           .as("x"),
         "x.post_like_postId",
         "posts.postId"
@@ -90,10 +76,8 @@ export class PostRepository extends DokiRepository<Post> {
         .count("likerId")
         .leftJoin(
           qb("post_like")
-            .select(
-              k().raw("postId as ??", ["post_like_postId"]),
-              k().raw("count(*) as ??", ["likes"])
-            )
+            .select(k().raw("postId as ??", ["post_like_postId"]), "likerId")
+            .whereNotNull("postId")
             .as("x"),
           "x.post_like_postId",
           "posts.postId"
@@ -108,10 +92,8 @@ export class PostRepository extends DokiRepository<Post> {
       .count("likerId")
       .leftJoin(
         qb("post_like")
-          .select(
-            k().raw("postId as ??", ["post_like_postId"]),
-            k().raw("count(*) as ??", ["likes"])
-          )
+          .select(k().raw("postId as ??", ["post_like_postId"]), "likerId")
+          .whereNotNull("postId")
           .as("x"),
         "x.post_like_postId",
         "posts.postId"
